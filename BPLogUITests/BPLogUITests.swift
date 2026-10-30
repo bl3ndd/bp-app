@@ -66,6 +66,8 @@ final class BPLogUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Track your blood pressure"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(containing: "not a medical device").exists)
         app.buttons["Get Started"].tap()
+        XCTAssertTrue(app.staticTexts["Your target"].waitForExistence(timeout: 5))
+        app.buttons["Continue"].tap()
         XCTAssertTrue(app.staticTexts["Connect Apple Health"].waitForExistence(timeout: 5))
         app.buttons["Not Now"].tap()
         XCTAssertTrue(app.staticTexts["Daily reminders"].waitForExistence(timeout: 5))

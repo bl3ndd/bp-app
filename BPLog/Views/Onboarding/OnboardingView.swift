@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-/// Three short steps: what the app is (and isn't), Apple Health, reminders.
+/// Four short steps: what the app is (and isn't), the target, Apple Health, reminders.
 /// Health and reminders are skippable — nothing in the app requires them (guideline 5.1.2(i)).
 struct OnboardingView: View {
     @Environment(AppSettings.self) private var settings
@@ -19,7 +19,8 @@ struct OnboardingView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     switch step {
                     case 0: welcome
-                    case 1: health
+                    case 1: target
+                    case 2: health
                     default: reminders
                     }
                 }
@@ -29,7 +30,7 @@ struct OnboardingView: View {
             VStack(spacing: 12) {
                 Button(primaryTitle, action: primary).buttonStyle(PrimaryButtonStyle())
                 if step > 0 {
-                    Button(step == 1 ? "Not Now" : "Skip", action: next)
+                    Button(step == 2 ? "Not Now" : "Skip", action: next)
                         .font(.body.weight(.medium))
                         .frame(minHeight: 44)
                 }
@@ -69,6 +70,35 @@ struct OnboardingView: View {
             bullet("arrow.triangle.2.circlepath", "Apple Health keeps your history in sync across your devices.")
             bullet("lock.fill", "Your data stays on your devices. We never see it.")
         }
+    }
+
+    /// The "in range" line for Statistics and the report. 130/80 stays if they just continue.
+    private var target: some View {
+        @Bindable var settings = settings
+        return Group {
+            header("target", "Your target")
+            Text("Your doctor may give you a goal for your readings. 130/80 is a common one. You can change it any time in Settings.")
+                .font(.title3)
+                .foregroundStyle(AppColors.textSecondary)
+            CardView {
+                VStack(spacing: 14) {
+                    targetRow("Top number below", value: $settings.targetSystolic, range: 100...160)
+                    Divider()
+                    targetRow("Bottom number below", value: $settings.targetDiastolic, range: 60...100)
+                }
+            }
+        }
+    }
+
+    private func targetRow(_ title: String, value: Binding<Int>, range: ClosedRange<Int>) -> some View {
+        Stepper(value: value, in: range, step: 5) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title).font(.title3.weight(.medium)).foregroundStyle(AppColors.textPrimary)
+                Spacer()
+                Text("\(value.wrappedValue)").font(AppFont.number(30)).foregroundStyle(AppColors.textPrimary)
+            }
+        }
+        .accessibilityValue("\(value.wrappedValue)")
     }
 
     private var reminders: some View {
@@ -123,16 +153,17 @@ struct OnboardingView: View {
     private var primaryTitle: String {
         switch step {
         case 0: "Get Started"
-        case 1: "Connect Apple Health"
+        case 1: "Continue"
+        case 2: "Connect Apple Health"
         default: "Turn On Reminders"
         }
     }
 
     private func primary() {
         switch step {
-        case 0:
+        case 0, 1:
             next()
-        case 1:
+        case 2:
             Task {
                 if await HealthService.requestAuthorization() {
                     settings.healthEnabled = true
@@ -155,7 +186,7 @@ struct OnboardingView: View {
     }
 
     private func next() {
-        if step < 2 {
+        if step < 3 {
             step += 1
             Analytics.track(.onboardingStep, ["step": String(step + 1)])
         } else {
