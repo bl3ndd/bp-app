@@ -9,17 +9,23 @@ struct BPLogApp: App {
     private let container: ModelContainer
 
     init() {
-        let settings = AppSettings(defaults: LaunchMode.isUITest ? UserDefaults(suiteName: "uitest-\(UUID().uuidString)")! : .standard)
+        let settings = AppSettings(defaults: LaunchMode.isThrowaway ? UserDefaults(suiteName: "uitest-\(UUID().uuidString)")! : .standard)
         if LaunchMode.skipOnboarding {
             settings.hasCompletedOnboarding = true
             settings.hasSeenIntroPaywall = true
         }
-        if LaunchMode.isUITest { ReviewService.prompt = {} }
+        if LaunchMode.isThrowaway { ReviewService.prompt = {} }
         Analytics.configure(enabled: settings.analyticsEnabled)
         _settings = State(initialValue: settings)
         // Local only: no iCloud for health data in v1 (guideline 5.1.3).
-        let config = ModelConfiguration(isStoredInMemoryOnly: LaunchMode.isUITest, cloudKitDatabase: .none)
+        let config = ModelConfiguration(isStoredInMemoryOnly: LaunchMode.isThrowaway, cloudKitDatabase: .none)
         container = try! ModelContainer(for: Reading.self, configurations: config)
+        if LaunchMode.isDemo {
+            for s in DemoData.samples(now: Date(), calendar: .current) {
+                container.mainContext.insert(Reading(date: s.value.date, systolic: s.value.systolic, diastolic: s.value.diastolic,
+                                                     pulse: s.value.pulse, tags: s.tags))
+            }
+        }
     }
 
     var body: some Scene {

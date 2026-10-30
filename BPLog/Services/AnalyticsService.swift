@@ -44,7 +44,7 @@ enum Analytics {
     private static var config: TelemetryDeck.Config?
 
     private static var isSuppressed: Bool {
-        LaunchMode.isUITest || ProcessInfo.processInfo.arguments.contains { $0.hasPrefix("-SNAPSHOT") }
+        LaunchMode.isThrowaway || ProcessInfo.processInfo.arguments.contains { $0.hasPrefix("-SNAPSHOT") }
     }
 
     /// Call once at launch, before any view appears.

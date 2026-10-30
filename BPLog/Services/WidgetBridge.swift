@@ -34,7 +34,7 @@ enum WidgetBridge {
 
     /// Writes the snapshot (or clears it when there are no readings) and asks widgets to redraw.
     static func publish(_ readings: [ReadingValue]) {
-        guard !LaunchMode.isUITest, let defaults = UserDefaults(suiteName: appGroup) else { return }
+        guard !LaunchMode.isThrowaway, let defaults = UserDefaults(suiteName: appGroup) else { return }
         if let snapshot = snapshot(readings, now: Date(), calendar: .current),
            let data = try? JSONEncoder().encode(snapshot) {
             defaults.set(data, forKey: snapshotKey)
