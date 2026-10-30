@@ -36,8 +36,14 @@ struct HistoryFilterTests {
         let d = { (m: Int, day: Int) in calendar.date(from: DateComponents(year: 2026, month: m, day: day, hour: 9))! }
         let months = HistoryFilter.months([d(10, 30), d(9, 2), d(10, 1), d(8, 15)], calendar: calendar)
         #expect(months == [d(10, 1), d(9, 1), d(8, 1)].map { calendar.dateInterval(of: .month, for: $0)!.start })
-        #expect(HistoryFilter.isIn(month: months[0], d(10, 30), calendar: calendar))
-        #expect(!HistoryFilter.isIn(month: months[0], d(9, 30), calendar: calendar))
-        #expect(HistoryFilter.isIn(month: nil, d(1, 1), calendar: calendar))
+        #expect(HistoryFilter.isIn(.month(months[0]), d(10, 30), calendar: calendar))
+        #expect(!HistoryFilter.isIn(.month(months[0]), d(9, 30), calendar: calendar))
+        #expect(HistoryFilter.isIn(.all, d(1, 1), calendar: calendar))
+    }
+
+    @Test func dayFilter() {
+        let at = { (day: Int, hour: Int) in calendar.date(from: DateComponents(year: 2026, month: 10, day: day, hour: hour))! }
+        #expect(HistoryFilter.isIn(.day(at(30, 0)), at(30, 23), calendar: calendar))
+        #expect(!HistoryFilter.isIn(.day(at(30, 12)), at(29, 23), calendar: calendar))
     }
 }

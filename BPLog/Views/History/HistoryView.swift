@@ -8,20 +8,25 @@ struct HistoryView: View {
     @State private var editing: Reading?
     @State private var pendingDelete: Reading?
     @State private var searchText = ""
-    /// First day of the shown month; nil shows every month.
-    @State private var month: Date?
+    @State private var scope = HistoryFilter.Scope.all
+    @State private var showingFilter = false
 
-    private var isFiltering: Bool { month != nil || !searchText.trimmingCharacters(in: .whitespaces).isEmpty }
+    private var isFiltering: Bool { scope != .all || !searchText.trimmingCharacters(in: .whitespaces).isEmpty }
 
     private var filtered: [Reading] {
         let calendar = Calendar.current
         return readings.filter { r in
-            HistoryFilter.isIn(month: month, r.date, calendar: calendar)
+            HistoryFilter.isIn(scope, r.date, calendar: calendar)
                 && HistoryFilter.matches(HistoryFilter.Item(value: r.value, tags: r.tags, note: r.note), query: searchText)
         }
     }
 
-    private var months: [Date] { HistoryFilter.months(readings.map(\.date), calendar: .current) }
+    private var months: [(month: Date, count: Int)] {
+        let calendar = Calendar.current
+        return HistoryFilter.months(readings.map(\.date), calendar: calendar).map { m in
+            (m, readings.count { calendar.isDate($0.date, equalTo: m, toGranularity: .month) })
+        }
+    }
 
     private var days: [(day: Date, readings: [Reading])] {
         let calendar = Calendar.current
@@ -37,8 +42,13 @@ struct HistoryView: View {
                     ContentUnavailableView("No readings yet", systemImage: "list.bullet.rectangle",
                                            description: Text("Readings you add or import from Apple Health show up here."))
                 } else if isFiltering && filtered.isEmpty {
-                    ContentUnavailableView("No matching readings", systemImage: "magnifyingglass",
-                                           description: Text("Try another month or search for a number, a tag or a word from a note."))
+                    ContentUnavailableView {
+                        Label("No matching readings", systemImage: "magnifyingglass")
+                    } description: {
+                        Text("Try another day or month, or search for a number, a tag or a word from a note.")
+                    } actions: {
+                        if scope != .all { Button("Show All Readings") { scope = .all } }
+                    }
                 } else {
                     List {
                         ForEach(days, id: \.day) { day in
@@ -66,7 +76,7 @@ struct HistoryView: View {
             .searchable(text: $searchText, prompt: "Number, tag or note")
             .toolbar {
                 if !readings.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) { monthMenu }
+                    ToolbarItem(placement: .topBarTrailing) { filterButton }
                 }
             }
             .scrollContentBackground(.hidden)
@@ -100,21 +110,24 @@ struct HistoryView: View {
         }
     }
 
-    /// Months that have readings, newest first, plus "All months".
-    private var monthMenu: some View {
-        Menu {
-            Picker("Month", selection: $month) {
-                Text("All months").tag(Date?.none)
-                ForEach(months, id: \.self) { m in
-                    Text(m.formatted(.dateTime.month(.wide).year())).tag(Optional(m))
-                }
-            }
+    /// Shows the current scope; opens the All / Month / Day picker.
+    private var filterButton: some View {
+        Button {
+            showingFilter = true
         } label: {
-            Label(month?.formatted(.dateTime.month(.abbreviated).year()) ?? "All months",
-                  systemImage: month == nil ? "calendar" : "calendar.badge.checkmark")
+            Label(scopeTitle, systemImage: scope == .all ? "calendar" : "calendar.badge.checkmark")
                 .labelStyle(.titleAndIcon)
         }
-        .accessibilityLabel("Filter by month")
+        .accessibilityLabel("Filter by date, \(scopeTitle)")
+        .sheet(isPresented: $showingFilter) { HistoryFilterSheet(scope: $scope, months: months) }
+    }
+
+    private var scopeTitle: String {
+        switch scope {
+        case .all: "All"
+        case .month(let m): m.formatted(.dateTime.month(.abbreviated).year())
+        case .day(let d): d.formatted(date: .abbreviated, time: .omitted)
+        }
     }
 
     private func row(_ r: Reading) -> some View {

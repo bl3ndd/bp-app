@@ -35,8 +35,18 @@ nonisolated enum HistoryFilter {
         return starts.sorted(by: >)
     }
 
-    static func isIn(month: Date?, _ date: Date, calendar: Calendar) -> Bool {
-        guard let month else { return true }
-        return calendar.isDate(date, equalTo: month, toGranularity: .month)
+    /// Which readings History shows.
+    enum Scope: Hashable {
+        case all
+        case month(Date)
+        case day(Date)
+    }
+
+    static func isIn(_ scope: Scope, _ date: Date, calendar: Calendar) -> Bool {
+        switch scope {
+        case .all: true
+        case .month(let month): calendar.isDate(date, equalTo: month, toGranularity: .month)
+        case .day(let day): calendar.isDate(date, inSameDayAs: day)
+        }
     }
 }
