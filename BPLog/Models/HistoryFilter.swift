@@ -31,8 +31,17 @@ nonisolated enum HistoryFilter {
 
     /// First day of each month that has readings, newest first.
     static func months(_ dates: [Date], calendar: Calendar) -> [Date] {
-        let starts = Set(dates.compactMap { calendar.dateInterval(of: .month, for: $0)?.start })
-        return starts.sorted(by: >)
+        monthCounts(dates, calendar: calendar).map(\.month)
+    }
+
+    /// Months with readings and how many, newest first, in one pass. (Counting
+    /// each month against every reading took 0.2 s at 3,800 readings.)
+    static func monthCounts(_ dates: [Date], calendar: Calendar) -> [(month: Date, count: Int)] {
+        var counts: [Date: Int] = [:]
+        for date in dates {
+            if let start = calendar.dateInterval(of: .month, for: date)?.start { counts[start, default: 0] += 1 }
+        }
+        return counts.map { ($0.key, $0.value) }.sorted { $0.month > $1.month }
     }
 
     /// Which readings History shows.

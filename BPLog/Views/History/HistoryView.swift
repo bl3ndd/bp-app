@@ -10,6 +10,10 @@ struct HistoryView: View {
     @State private var searchText = ""
     @State private var scope = HistoryFilter.Scope.all
     @State private var showingFilter = false
+    /// Days rendered so far; more load as the list nears its end. Building every
+    /// day of a long history at once made the tab take ~1.5 s to open.
+    @State private var visibleDays = HistoryView.pageSize
+    static let pageSize = 60
 
     private var isFiltering: Bool { scope != .all || !searchText.trimmingCharacters(in: .whitespaces).isEmpty }
 
@@ -21,12 +25,7 @@ struct HistoryView: View {
         }
     }
 
-    private var months: [(month: Date, count: Int)] {
-        let calendar = Calendar.current
-        return HistoryFilter.months(readings.map(\.date), calendar: calendar).map { m in
-            (m, readings.count { calendar.isDate($0.date, equalTo: m, toGranularity: .month) })
-        }
-    }
+
 
     private var days: [(day: Date, readings: [Reading])] {
         let calendar = Calendar.current
@@ -50,8 +49,9 @@ struct HistoryView: View {
                         if scope != .all { Button("Show All Readings") { scope = .all } }
                     }
                 } else {
+                    let allDays = days
                     List {
-                        ForEach(days, id: \.day) { day in
+                        ForEach(allDays.prefix(visibleDays), id: \.day) { day in
                             Section {
                                 ForEach(day.readings) { r in
                                     Button { editing = r } label: { row(r) }
@@ -69,11 +69,20 @@ struct HistoryView: View {
                                 dayHeader(day.day, day.readings)
                             }
                         }
+                        if allDays.count > visibleDays {
+                            // Reaching the end of what's shown loads the next page.
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .listRowBackground(Color.clear)
+                                .onAppear { visibleDays += Self.pageSize }
+                        }
                     }
                 }
             }
             .navigationTitle("History")
             .searchable(text: $searchText, prompt: "Number, tag or note")
+            .onChange(of: scope) { visibleDays = Self.pageSize }
+            .onChange(of: searchText) { visibleDays = Self.pageSize }
             .toolbar {
                 if !readings.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) { filterButton }
@@ -119,7 +128,10 @@ struct HistoryView: View {
                 .labelStyle(.titleAndIcon)
         }
         .accessibilityLabel("Filter by date, \(scopeTitle)")
-        .sheet(isPresented: $showingFilter) { HistoryFilterSheet(scope: $scope, months: months) }
+        // Month counts are worked out only when the sheet opens.
+        .sheet(isPresented: $showingFilter) {
+            HistoryFilterSheet(scope: $scope, months: HistoryFilter.monthCounts(readings.map(\.date), calendar: .current))
+        }
     }
 
     private var scopeTitle: String {

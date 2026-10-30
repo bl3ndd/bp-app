@@ -41,6 +41,13 @@ struct HistoryFilterTests {
         #expect(HistoryFilter.isIn(.all, d(1, 1), calendar: calendar))
     }
 
+    @Test func monthCountsInOnePass() {
+        let d = { (m: Int, day: Int) in calendar.date(from: DateComponents(year: 2026, month: m, day: day, hour: 9))! }
+        let counts = HistoryFilter.monthCounts([d(10, 30), d(9, 2), d(10, 1), d(10, 2)], calendar: calendar)
+        #expect(counts.map(\.count) == [3, 1])
+        #expect(counts.first?.month == calendar.dateInterval(of: .month, for: d(10, 5))!.start)
+    }
+
     @Test func dayFilter() {
         let at = { (day: Int, hour: Int) in calendar.date(from: DateComponents(year: 2026, month: 10, day: day, hour: hour))! }
         #expect(HistoryFilter.isIn(.day(at(30, 0)), at(30, 23), calendar: calendar))
