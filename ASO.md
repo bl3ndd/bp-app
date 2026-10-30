@@ -19,6 +19,10 @@ Searchers phrase it as "blood pressure", rarely "BP" alone; apps from the top of
 
 ## Metadata
 
+- **Support URL:** `https://bp-app-site.vercel.app/support.html`
+- **Privacy Policy URL:** `https://bp-app-site.vercel.app/privacy.html`
+- **Marketing URL (optional):** `https://bp-app-site.vercel.app/`
+
 - **Name (29/30):** `Simply BP: Blood Pressure Log` — brand "Simply BP" checked free in the US App Store on 2026-10-30 (0 apps with the word); it states our promise (simple, vs. SmartBP's paywall-everywhere complaints) and adds "BP" for bp log / bp tracker searches. A brand before the phrase doesn't hurt ranking: "Mezame — CBT Thought Journal" is #1 for its phrase.
 - **Subtitle (28/30):** `Tracker, Charts & Doctor PDF`
 - **Keywords (98/100), no repeats of name/subtitle words:**

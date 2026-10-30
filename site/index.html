@@ -3,10 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0; url=/privacy.html">
 <title>Simply BP</title>
+<style>
+  :root { --bg: #f2f4f7; --text: #111827; --muted: #4b5563; --accent: #1d4ed8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #000; --text: #f9fafb; --muted: #c7cbd1; --accent: #60a5fa; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 18px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
+  h1 { font-size: 34px; margin: 0 0 8px; }
+  p { color: var(--muted); }
+  a { color: var(--accent); }
+</style>
 </head>
 <body>
-<p><a href="/privacy.html">Simply BP Privacy Policy</a></p>
+<main>
+  <h1>Simply BP: Blood Pressure Log</h1>
+  <p>A simple blood pressure diary for the readings you take with your own monitor. Daily averages, trends, Apple Health sync and a doctor-ready report. One-time Pro unlock: no subscription, no ads.</p>
+  <p><a href="/support.html">Support</a> · <a href="/privacy.html">Privacy Policy</a></p>
+</main>
 </body>
 </html>
