@@ -18,6 +18,12 @@ struct EntryInputTests {
 }
 
 extension EntryInputTests {
+    @Test func leadingZerosAreDropped() {
+        #expect(EntryInput.sanitize("0") == "")
+        #expect(EntryInput.sanitize("080") == "80")
+        #expect(EntryInput.sanitize("100") == "100")
+    }
+
     @Test func nonASCIIDigitsAreDropped() {
         #expect(EntryInput.sanitize("١٢٨") == "")  // Arabic-Indic 128: Int() can't read it
         #expect(EntryInput.sanitize("1٢8") == "18")
