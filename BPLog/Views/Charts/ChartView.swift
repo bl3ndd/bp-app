@@ -143,10 +143,12 @@ struct ChartView: View {
                     .foregroundStyle(by: .value("Type", "Systolic"))
                 PointMark(x: .value("Date", p.date), y: .value("mmHg", p.systolic))
                     .foregroundStyle(by: .value("Type", "Systolic"))
+                    .symbolSize(12)
                 LineMark(x: .value("Date", p.date), y: .value("mmHg", p.diastolic), series: .value("Type", "Diastolic"))
                     .foregroundStyle(by: .value("Type", "Diastolic"))
                 PointMark(x: .value("Date", p.date), y: .value("mmHg", p.diastolic))
                     .foregroundStyle(by: .value("Type", "Diastolic"))
+                    .symbolSize(12)
                 if showPulse, let pulse = p.pulse {
                     LineMark(x: .value("Date", p.date), y: .value("bpm", pulse), series: .value("Type", "Pulse"))
                         .foregroundStyle(by: .value("Type", "Pulse"))
