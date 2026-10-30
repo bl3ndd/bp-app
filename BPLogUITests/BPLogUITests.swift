@@ -61,7 +61,7 @@ final class BPLogUITests: XCTestCase {
     // MARK: Onboarding
 
     @MainActor
-    func testOnboardingSkipsHealthAndRemindersThenOffersProOnce() {
+    func testOnboardingSkipsHealthAndRemindersThenOffersProAfterFirstReading() {
         launch(["-FREE"])
         XCTAssertTrue(app.staticTexts["Track your blood pressure"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(containing: "not a medical device").exists)
@@ -71,9 +71,13 @@ final class BPLogUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Daily reminders"].waitForExistence(timeout: 5))
         app.buttons["Skip"].tap()
 
-        XCTAssertTrue(app.staticTexts["Simply BP Pro"].waitForExistence(timeout: 5), "intro paywall")
+        XCTAssertTrue(app.staticTexts["Track your blood pressure"].waitForExistence(timeout: 5), "empty Home, no paywall yet")
+        XCTAssertFalse(app.staticTexts["Simply BP Pro"].exists)
+        addReading("120", "78")
+        XCTAssertTrue(app.staticTexts["Simply BP Pro"].waitForExistence(timeout: 5), "offered after the first reading")
         app.buttons["Not Now"].tap()
-        XCTAssertTrue(app.staticTexts["Track your blood pressure"].waitForExistence(timeout: 5), "empty Home")
+        addReading("118", "76")
+        XCTAssertFalse(app.staticTexts["Simply BP Pro"].waitForExistence(timeout: 2), "only once")
     }
 
     // MARK: Entry

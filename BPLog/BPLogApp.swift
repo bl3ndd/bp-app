@@ -41,7 +41,6 @@ struct BPLogApp: App {
             Group {
                 if settings.hasCompletedOnboarding {
                     MainTabView()
-                        .sheet(isPresented: introPaywall) { PaywallView(source: "intro") }
                 } else {
                     OnboardingView()
                 }
@@ -64,13 +63,5 @@ struct BPLogApp: App {
                 }
         }
         .modelContainer(container)
-    }
-
-    /// Offered once, right after onboarding; dismissing it marks it seen.
-    private var introPaywall: Binding<Bool> {
-        Binding(
-            get: { !settings.hasSeenIntroPaywall && !purchases.isPro },
-            set: { if !$0 { settings.hasSeenIntroPaywall = true } }
-        )
     }
 }

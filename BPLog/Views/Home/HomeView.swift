@@ -3,8 +3,10 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(AppSettings.self) private var settings
+    @Environment(PurchaseService.self) private var purchases
     @Query(sort: \Reading.date, order: .reverse) private var readings: [Reading]
     @State private var showingAdd = false
+    @State private var showingFirstPaywall = false
     @State private var showingReport = false
 
     private var lastWeek: [ReadingValue] {
@@ -47,7 +49,8 @@ struct HomeView: View {
                 .buttonStyle(PrimaryButtonStyle())
                 .padding()
             }
-            .sheet(isPresented: $showingAdd) { AddReadingView() }
+            .sheet(isPresented: $showingAdd, onDismiss: offerProAfterFirstReading) { AddReadingView() }
+            .sheet(isPresented: $showingFirstPaywall) { PaywallView(source: "first_reading") }
             .toolbar {
                 if !readings.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -60,6 +63,14 @@ struct HomeView: View {
             .onAppear(perform: openPendingAdd)
             .onChange(of: settings.pendingAddReading) { openPendingAdd() }
         }
+    }
+
+    /// Pro is offered once, after the first saved reading — by then the person has
+    /// seen what the app does. Never again unprompted; Cancel doesn't count.
+    private func offerProAfterFirstReading() {
+        guard !settings.hasSeenIntroPaywall, !purchases.isPro, !readings.isEmpty else { return }
+        settings.hasSeenIntroPaywall = true
+        showingFirstPaywall = true
     }
 
     private func openPendingAdd() {

@@ -14,7 +14,7 @@ A blood pressure diary for US adults 50+: type readings from a home monitor, see
 | JSON backup / restore | |
 | Reminders | |
 
-Gating goes through one predicate, `ProFeature.isLocked(_:isPro:)`. The paywall shows when a locked feature is tapped, plus once right after onboarding. No subscription, no ads, no account.
+Gating goes through one predicate, `ProFeature.isLocked(_:isPro:)`. The paywall shows when a locked feature is tapped, plus once after the first saved reading. No subscription, no ads, no account.
 
 ## Categories (`BPCategory.classify`)
 

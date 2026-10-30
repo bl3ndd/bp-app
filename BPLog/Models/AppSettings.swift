@@ -7,7 +7,7 @@ final class AppSettings {
     @ObservationIgnored private let defaults: UserDefaults
 
     var hasCompletedOnboarding: Bool { didSet { defaults.set(hasCompletedOnboarding, forKey: Keys.onboarding) } }
-    /// The paywall is offered once right after onboarding, never again unprompted.
+    /// The paywall is offered once, after the first saved reading, never again unprompted.
     var hasSeenIntroPaywall: Bool { didSet { defaults.set(hasSeenIntroPaywall, forKey: Keys.introPaywall) } }
     var healthEnabled: Bool { didSet { defaults.set(healthEnabled, forKey: Keys.health) } }
     /// Anonymous usage counts (TelemetryDeck). On by default, as in Mezame; off in Settings.

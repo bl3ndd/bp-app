@@ -22,7 +22,7 @@ enum Analytics {
         case readingAdded = "reading.added"
         case readingEdited = "reading.edited"
         case readingDeleted = "reading.deleted"
-        /// `from` = intro | charts | stats | report.
+        /// `from` = first_reading | charts | stats | report.
         case paywallShown = "paywall.shown"
         case proPurchased = "pro.purchased"
         case proRestored = "pro.restored"

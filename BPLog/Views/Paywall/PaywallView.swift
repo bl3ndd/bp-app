@@ -4,7 +4,7 @@ import StoreKit
 /// One-time Pro unlock. Lists only what the build actually has — promising
 /// anything unshipped is a guideline 2.3.1 rejection.
 struct PaywallView: View {
-    /// Where the paywall was opened from, for the analytics funnel: intro | charts | stats | report.
+    /// Where the paywall was opened from, for the analytics funnel: first_reading | charts | stats | report.
     var source: String
     @Environment(PurchaseService.self) private var purchases
     @Environment(\.dismiss) private var dismiss

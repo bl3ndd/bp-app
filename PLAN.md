@@ -162,7 +162,7 @@ Files:
 [x] `BPLog.storekit` with the non-consumable at $14.99, selected in the Run scheme
 [x] `enum ProFeature { pdfReport, fullStats, longChartRanges }` + `static func isLocked(_:isPro:) -> Bool`, the only gating predicate used by views
 [x] `PaywallView` adapted from Mezame: headline "One price. Yours forever.", benefits (doctor PDF report, full statistics and trends, all-time charts), "No subscription. No ads." line, price from `product.displayPrice`, buy, restore, dismiss always visible
-[x] Paywall appears only when tapping a locked feature, plus once after onboarding (dismissible). Logging, history, Health and backup are never gated
+[x] Paywall appears only when tapping a locked feature, plus once after the first saved reading (dismissible). Logging, history, Health and backup are never gated
 [x] Write tests for this task (`isLocked` for every feature in both states)
 [x] run project test suite — must pass before Task 7
 
