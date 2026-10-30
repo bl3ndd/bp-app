@@ -6,6 +6,10 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AD0000000000000000000001 /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = AD0000000000000000000002 /* TelemetryDeck */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		8DE41D323094B4BD00D1BFD2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -51,6 +55,7 @@
 		8DE41D213094B4BB00D1BFD2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				AD0000000000000000000001 /* TelemetryDeck in Frameworks */,
 			);
 		};
 		8DE41D2E3094B4BD00D1BFD2 /* Frameworks */ = {
@@ -103,6 +108,9 @@
 				8DE41D263094B4BB00D1BFD2 /* BPLog */,
 			);
 			name = BPLog;
+			packageProductDependencies = (
+				AD0000000000000000000002 /* TelemetryDeck */,
+			);
 			productName = BPLog;
 			productReference = 8DE41D243094B4BB00D1BFD2 /* BPLog.app */;
 			productType = "com.apple.product-type.application";
@@ -181,6 +189,9 @@
 			);
 			mainGroup = 8DE41D1B3094B4BB00D1BFD2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AD0000000000000000000003 /* XCRemoteSwiftPackageReference "SwiftSDK" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8DE41D253094B4BB00D1BFD2 /* Products */;
 			projectDirPath = "";
@@ -556,6 +567,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AD0000000000000000000003 /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.14.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AD0000000000000000000002 /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD0000000000000000000003 /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8DE41D1C3094B4BB00D1BFD2 /* Project object */;
 	validationLevel = 1;

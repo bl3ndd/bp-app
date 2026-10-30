@@ -122,7 +122,7 @@ struct ChartView: View {
             }
             .background(AppColors.bgApp)
             .navigationTitle("Charts")
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingPaywall) { PaywallView(source: "charts") }
         }
     }
 

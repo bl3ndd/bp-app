@@ -39,6 +39,7 @@ Input limits (`ReadingLimits`): SYS 60–260, DIA 30–160, pulse 30–220, SYS 
 
 - SwiftData, local only. No iCloud/CloudKit: guideline 5.1.3(ii) "may not store personal health information in iCloud".
 - Apple Health (opt-in): writes BP correlations + heart rate with metadata (reading id, arm, position, tags, note, `WasUserEntered`). Reads every source. Our own writes come back on a fresh install, which is how a new phone gets its history. Dedup is by Health sample id and by our reading id.
+- Analytics: TelemetryDeck (`AnalyticsService.swift`), anonymous feature-usage events only, never health data; on by default, off in Settings › Privacy. Suppressed in UI tests and `-SNAPSHOT` runs.
 - JSON backup (free): user-initiated export to a user-chosen location; restore is additive (matched on reading id).
 
 ## Out of scope for v1

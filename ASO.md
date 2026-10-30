@@ -65,13 +65,17 @@ Simply BP is not a medical device and does not measure blood pressure. Always ta
 5. Syncs with Apple Health
 6. One-time unlock. No subscription. No ads.
 
+## App Privacy answers (App Store Connect)
+
+With TelemetryDeck the answer is no longer "Data Not Collected". Declare: **Usage Data › Product Interaction** and **Diagnostics › Other Diagnostic Data**, both *Not linked to the user*, *Not used for tracking*, purpose *Analytics*. Check TelemetryDeck's own App Store privacy guide before submitting. Health & Fitness data: **not collected** (it never leaves the device).
+
 ## Notes for Review (2.3.1(a))
 
 Simply BP is a blood pressure diary. It does not measure blood pressure with device sensors; users type readings from their own home monitor.
 
 How to review: complete the 3-step onboarding (Apple Health and reminders can be skipped). On Home tap "Add Reading", enter e.g. 128 / 82 / 70 and Save. Add a few more readings to see History, Charts and Stats populate.
 
-- HealthKit: reads and writes blood pressure (systolic/diastolic correlation) and heart rate, only after the user turns on Settings › Apple Health. Samples we write are marked HKMetadataKeyWasUserEntered. Health data is never sent anywhere: the app has no network calls, analytics or ads.
+- HealthKit: reads and writes blood pressure (systolic/diastolic correlation) and heart rate, only after the user turns on Settings › Apple Health. Samples we write are marked HKMetadataKeyWasUserEntered. Health data is never sent anywhere. The only network traffic is anonymous feature-usage counts via TelemetryDeck (event names only, no health data; opt-out in Settings › Privacy); no ads.
 - Storage: local SwiftData store only. No iCloud/CloudKit (5.1.3(ii)). The JSON backup is created only when the user taps "Back Up Readings" and is saved wherever the user chooses with the system file picker.
 - In-App Purchase: one non-consumable, "Simply BP Pro" (`white.tea.BPLog.pro`), $14.99. It unlocks the doctor PDF report (Home or Stats › Doctor Report), full statistics (Stats tab), and 90D/1Y/All chart ranges. Restore Purchases is in the paywall and in Settings. Pro features don't require HealthKit access.
 - Medical: categories follow the 2017 ACC/AHA guideline; "Low" (below 90/60) is a separate, commonly used threshold. The app reminds users to consult a doctor in onboarding, in Settings › About and on every report page; crisis-range readings show a banner pointing to their doctor or 911 / local emergency number. No diagnosis or treatment advice.

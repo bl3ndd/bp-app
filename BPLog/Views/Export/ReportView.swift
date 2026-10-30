@@ -56,7 +56,7 @@ struct ReportView: View {
                 .background(.bar)
             }
             .quickLookPreview($pdf)
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .sheet(isPresented: $showingPaywall) { PaywallView(source: "report") }
         }
     }
 
@@ -65,6 +65,7 @@ struct ReportView: View {
             showingPaywall = true
             return
         }
+        Analytics.track(.reportCreated, ["range": range.rawValue])
         pdf = PDFGenerator.generate(readings: selected.map { ReportReading($0) }, interval: range.interval(now: Date()),
                                     patientName: name, targetSystolic: settings.targetSystolic, targetDiastolic: settings.targetDiastolic)
     }

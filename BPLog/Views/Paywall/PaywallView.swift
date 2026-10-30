@@ -4,6 +4,8 @@ import StoreKit
 /// One-time Pro unlock. Lists only what the build actually has — promising
 /// anything unshipped is a guideline 2.3.1 rejection.
 struct PaywallView: View {
+    /// Where the paywall was opened from, for the analytics funnel: intro | charts | stats | report.
+    var source: String
     @Environment(PurchaseService.self) private var purchases
     @Environment(\.dismiss) private var dismiss
     @State private var failed = false
@@ -46,13 +48,17 @@ struct PaywallView: View {
                     }
 
                     Button("Restore Purchases") {
-                        Task { await purchases.restore() }
+                        Task {
+                            await purchases.restore()
+                            if purchases.isPro { Analytics.track(.proRestored, ["from": source]) }
+                        }
                     }
                     .font(.body.weight(.medium))
                     .disabled(purchases.isWorking)
                 }
                 .padding()
             }
+            .onAppear { Analytics.track(.paywallShown, ["from": source]) }
             .background(AppColors.bgApp)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -75,7 +81,7 @@ struct PaywallView: View {
             Task {
                 guard purchases.product != nil else { await purchases.load(); return }
                 do {
-                    _ = try await purchases.purchase()
+                    if try await purchases.purchase() { Analytics.track(.proPurchased, ["from": source]) }
                 } catch {
                     failed = true
                 }

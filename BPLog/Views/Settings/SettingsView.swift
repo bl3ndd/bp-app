@@ -90,6 +90,15 @@ struct SettingsView: View {
                     .disabled(purchases.isWorking)
                 }
 
+                Section {
+                    Toggle("Share anonymous usage stats", isOn: $settings.analyticsEnabled)
+                        .tint(AppColors.accent)
+                } header: {
+                    Text("Privacy")
+                } footer: {
+                    Text("Counts which features get used, so we know what to improve. Never your readings, Health data or anything you type.")
+                }
+
                 Section("About") {
                     Link(destination: AppLinks.privacyPolicy) { Label("Privacy Policy", systemImage: "hand.raised.fill") }
                     Link(destination: AppLinks.support) { Label("Contact Support", systemImage: "envelope.fill") }
@@ -157,6 +166,7 @@ struct SettingsView: View {
         if let minutes { list.append(minutes) }
         settings.reminderMinutes = list.sorted()
         NotificationService.schedule(minutes: settings.reminderMinutes)
+        Analytics.track(.remindersChanged, ["count": String(settings.reminderMinutes.count)])
     }
 
     // MARK: Health
@@ -171,6 +181,7 @@ struct SettingsView: View {
             return
         }
         settings.healthEnabled = true
+        Analytics.track(.healthEnabled, ["from": "settings"])
         await syncNow()
     }
 
@@ -180,12 +191,14 @@ struct SettingsView: View {
         let imported = await HealthService.importNew(into: context)
         let saved = await HealthService.backfill(context)
         syncing = false
+        Analytics.track(.healthSynced)
         message = "Brought in \(imported) readings from Apple Health and saved \(saved) to it. If nothing moved, check Settings › Health › Data Access & Devices › Simply BP and allow blood pressure and heart rate."
     }
 
     private func prepareBackup() {
         do {
             backup = BackupDocument(data: try BackupService.export(readings))
+            Analytics.track(.backupSaved)
         } catch {
             message = "The backup couldn't be created. Please try again."
         }
@@ -198,6 +211,7 @@ struct SettingsView: View {
         defer { if opened { url.stopAccessingSecurityScopedResource() } }
         do {
             let outcome = try BackupService.restore(from: try Data(contentsOf: url), into: context)
+            Analytics.track(.backupRestored)
             message = "Added \(outcome.added) readings. Skipped \(outcome.skipped) you already had."
         } catch {
             message = "This file doesn't look like a Simply BP backup."

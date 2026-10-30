@@ -97,6 +97,7 @@ struct HistoryView: View {
                 Task { await HealthService.delete(healthKitID: id, date: date) }
             }
             context.delete(r)
+            Analytics.track(.readingDeleted)
         }
         try? context.save()
     }

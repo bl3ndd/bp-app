@@ -151,6 +151,13 @@ struct OnboardingView: View {
     }
 
     private func next() {
-        if step < 2 { step += 1 } else { settings.hasCompletedOnboarding = true }
+        if step < 2 {
+            step += 1
+            Analytics.track(.onboardingStep, ["step": String(step + 1)])
+        } else {
+            Analytics.track(.onboardingCompleted, ["health": settings.healthEnabled ? "on" : "off",
+                                                   "reminders": settings.reminderMinutes.isEmpty ? "off" : "on"])
+            settings.hasCompletedOnboarding = true
+        }
     }
 }

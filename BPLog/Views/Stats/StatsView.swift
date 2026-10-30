@@ -41,7 +41,8 @@ struct StatsView: View {
             }
             .background(AppColors.bgApp)
             .navigationTitle("Statistics")
-            .sheet(isPresented: $showingPaywall) { PaywallView() }
+            .onAppear { Analytics.track(.statsOpened, ["pro": purchases.isPro ? "true" : "false"]) }
+            .sheet(isPresented: $showingPaywall) { PaywallView(source: "stats") }
             .toolbar {
                 if !readings.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {

@@ -3,22 +3,31 @@ import SwiftData
 
 @main
 struct BPLogApp: App {
-    @State private var settings = AppSettings()
+    @State private var settings: AppSettings
     @State private var purchases = PurchaseService()
     @Environment(\.scenePhase) private var scenePhase
+    private let container: ModelContainer
 
-    /// Local only: no iCloud for health data in v1 (guideline 5.1.3).
-    private let container: ModelContainer = {
-        let config = ModelConfiguration(cloudKitDatabase: .none)
-        return try! ModelContainer(for: Reading.self, configurations: config)
-    }()
+    init() {
+        let settings = AppSettings(defaults: LaunchMode.isUITest ? UserDefaults(suiteName: "uitest-\(UUID().uuidString)")! : .standard)
+        if LaunchMode.skipOnboarding {
+            settings.hasCompletedOnboarding = true
+            settings.hasSeenIntroPaywall = true
+        }
+        if LaunchMode.isUITest { ReviewService.prompt = {} }
+        Analytics.configure(enabled: settings.analyticsEnabled)
+        _settings = State(initialValue: settings)
+        // Local only: no iCloud for health data in v1 (guideline 5.1.3).
+        let config = ModelConfiguration(isStoredInMemoryOnly: LaunchMode.isUITest, cloudKitDatabase: .none)
+        container = try! ModelContainer(for: Reading.self, configurations: config)
+    }
 
     var body: some Scene {
         WindowGroup {
             Group {
                 if settings.hasCompletedOnboarding {
                     MainTabView()
-                        .sheet(isPresented: introPaywall) { PaywallView() }
+                        .sheet(isPresented: introPaywall) { PaywallView(source: "intro") }
                 } else {
                     OnboardingView()
                 }

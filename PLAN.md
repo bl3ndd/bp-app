@@ -17,7 +17,7 @@ Free download. Free tier: unlimited logging, Apple Health read/write, history, b
 - Blood sugar logging: v2 (same mechanics, separate keyword cluster).
 - Widgets, Apple Watch app, localization beyond English: after the US launch proves traction. DE/JP are the first localization candidates.
 - Any "measuring" (camera/finger) or diagnosis/advice: review risk (guideline 1.4.1) and FDA territory. We display readings and the standard AHA category table, nothing more.
-- Analytics/ads SDKs: none, health data never leaves the device (FTC and guideline 5.1.3).
+- Ads SDKs: none. Analytics: TelemetryDeck added on 2026-10-30 at the user's request, feature-usage event names only; health data never leaves the device (FTC, guidelines 5.1.2(vi) and 5.1.3).
 
 ## Context
 

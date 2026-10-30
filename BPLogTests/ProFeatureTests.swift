@@ -29,3 +29,19 @@ struct ProFeatureTests {
         #expect(ChartRange.all.feature == .longChartRanges)
     }
 }
+
+@MainActor
+@Suite(.serialized)
+struct AnalyticsTests {
+    @Test func sendsOnlyWhileEnabled() {
+        var sent: [String] = []
+        let saved = Analytics.sink
+        Analytics.sink = { name, _ in sent.append(name) }
+        defer { Analytics.sink = saved; Analytics.setEnabled(true) }
+        Analytics.setEnabled(true)
+        Analytics.track(.readingAdded)
+        Analytics.setEnabled(false)
+        Analytics.track(.reportCreated)
+        #expect(sent == ["reading.added"])
+    }
+}

@@ -1,6 +1,6 @@
 # Simply BP
 
-iOS blood pressure diary. SwiftUI, SwiftData, Swift Charts, HealthKit, StoreKit 2. No third-party packages. iOS 18+.
+iOS blood pressure diary. SwiftUI, SwiftData, Swift Charts, HealthKit, StoreKit 2, TelemetryDeck (the only package; anonymous usage counts, no health data). iOS 18+.
 
 Docs: `SPEC.md` (what the app does), `PLAN.md` (implementation plan), `ASO.md` (App Store metadata and review notes), `PRIVACY.md` (privacy policy draft).
 

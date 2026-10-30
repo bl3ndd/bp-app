@@ -46,7 +46,8 @@ struct AddReadingView: View {
         case .pulse: pulse
         default: nil
         }
-        if let typing, !EntryInput.isComplete(typing) { return nil }
+        // An empty focused field isn't "being typed": moving on to an empty Pulse must show the error.
+        if let typing, !typing.isEmpty, !EntryInput.isComplete(typing) { return nil }
         return ReadingLimits.problem(systolic: sys, diastolic: dia, pulse: pul)
     }
 
@@ -177,6 +178,7 @@ struct AddReadingView: View {
         let previous = editing.map { (id: $0.healthKitID, date: $0.date) }
         if let editing {
             reading = editing
+            Analytics.track(.readingEdited)
             reading.systolic = sys
             reading.diastolic = dia
             reading.pulse = pul
@@ -185,6 +187,7 @@ struct AddReadingView: View {
             reading = Reading(date: date, systolic: sys, diastolic: dia, pulse: pul)
             context.insert(reading)
             ReviewService.recordReading(reading.category)
+            Analytics.track(.readingAdded)
         }
         reading.arm = arm
         reading.position = position
