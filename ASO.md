@@ -79,6 +79,8 @@ With TelemetryDeck the answer is no longer "Data Not Collected". Declare: **Usag
 
 Simply BP is a blood pressure diary. It does not measure blood pressure with device sensors; users type readings from their own home monitor.
 
+A short screen recording of the main flow is attached to this submission.
+
 How to review: complete the 4-step onboarding (the target, Apple Health and reminders can be skipped). On Home tap "Add Reading", enter e.g. 128 / 82 / 70 and Save. Add a few more readings to see History, Charts and Stats populate.
 
 - HealthKit: reads and writes blood pressure (systolic/diastolic correlation) and heart rate, only after the user turns on Settings › Apple Health. Samples we write are marked HKMetadataKeyWasUserEntered. Health data is never sent anywhere. The only network traffic is anonymous feature-usage counts via TelemetryDeck (event names only, no health data; opt-out in Settings › Privacy); no ads.
