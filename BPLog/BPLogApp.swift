@@ -29,7 +29,7 @@ struct BPLogApp: App {
             _storeFailed = State(initialValue: true)
         }
         if LaunchMode.isDemo {
-            for s in DemoData.samples(now: Date(), calendar: .current, days: LaunchMode.isDemoLarge ? 3 * 365 : 60) {
+            for s in DemoData.samples(now: Date(), calendar: .current, days: LaunchMode.isDemoLarge ? 5 * 365 : 60) {
                 container.mainContext.insert(Reading(date: s.value.date, systolic: s.value.systolic, diastolic: s.value.diastolic,
                                                      pulse: s.value.pulse, tags: s.tags))
             }

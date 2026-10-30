@@ -5,7 +5,7 @@ import Foundation
 /// readings and each run starts clean. `-SKIP_ONBOARDING`: start on Home.
 /// `-DEMO`: like `-UITEST`, plus two months of sample readings and no onboarding,
 /// for trying statistics and the purchase flow on a device. `-DEMO_LARGE`: the same
-/// with three years (~3,000 readings), for checking speed with a long history.
+/// with five years (~3,800 readings), for checking speed with a long history.
 /// Pro state comes from `PurchaseService`'s `-FREE` / `-SNAPSHOT`.
 enum LaunchMode {
     #if DEBUG
