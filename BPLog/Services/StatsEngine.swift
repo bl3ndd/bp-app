@@ -135,9 +135,44 @@ nonisolated enum StatsEngine {
 
     /// One averaged point per calendar day, oldest first — the chart's "daily average" mode.
     static func dailyAverages(_ readings: [ReadingValue], calendar: Calendar) -> [(day: Date, averages: Averages)] {
-        Dictionary(grouping: readings) { calendar.startOfDay(for: $0.date) }
-            .compactMap { day, group in averages(group).map { (day, $0) } }
+        periodAverages(readings, by: .day, calendar: calendar)
+    }
+
+    /// One averaged point per day, week or month, oldest first, dated at the
+    /// period's start. Long charts use weeks or months so years of readings
+    /// stay readable instead of turning into a solid band.
+    static func periodAverages(_ readings: [ReadingValue], by component: Calendar.Component,
+                               calendar: Calendar) -> [(day: Date, averages: Averages)] {
+        Dictionary(grouping: readings) { calendar.dateInterval(of: component, for: $0.date)?.start ?? calendar.startOfDay(for: $0.date) }
+            .compactMap { start, group in averages(group).map { (start, $0) } }
             .sorted { $0.day < $1.day }
+    }
+
+    /// How coarse a chart's points should be for a span of history.
+    enum ChartBucket: Equatable, Sendable {
+        case day, week, month
+
+        var component: Calendar.Component {
+            switch self {
+            case .day: .day
+            case .week: .weekOfYear
+            case .month: .month
+            }
+        }
+
+        var label: String {
+            switch self {
+            case .day: "Daily averages"
+            case .week: "Weekly averages"
+            case .month: "Monthly averages"
+            }
+        }
+
+        /// Days for up to ~4 months, weeks up to ~13 months, months beyond:
+        /// at most ~60 points for a typical history.
+        static func forSpan(days: Int) -> ChartBucket {
+            days > 400 ? .month : days > 120 ? .week : .day
+        }
     }
 
     private static func mean(_ values: [Double]) -> Double? {

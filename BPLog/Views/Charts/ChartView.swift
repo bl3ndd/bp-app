@@ -36,8 +36,9 @@ struct ChartView: View {
     @State private var range = ChartRange.month
     @State private var showingPaywall = false
     @State private var showPulse = false
-    /// On by default: several readings a day would otherwise turn the line into a zigzag.
-    @State private var dailyAverage = true
+    /// Off by default: points are averaged per day, week or month (by span),
+    /// since raw readings turn a long chart into a solid band.
+    @State private var showEveryReading = false
 
     private struct Point: Identifiable {
         /// Position in the list: two readings can share a timestamp.
@@ -55,10 +56,16 @@ struct ChartView: View {
         return readings.filter { $0.date >= since }.map(\.value)
     }
 
+    /// Span of what's shown, in days: the range itself, or the history's length for All.
+    private var bucket: StatsEngine.ChartBucket {
+        let span = range.days ?? values.first.map { Calendar.current.dateComponents([.day], from: $0.date, to: Date()).day ?? 0 } ?? 0
+        return .forSpan(days: span)
+    }
+
     private var points: [Point] {
         let raw: [Point]
-        if dailyAverage {
-            raw = StatsEngine.dailyAverages(values, calendar: .current)
+        if !showEveryReading {
+            raw = StatsEngine.periodAverages(values, by: bucket.component, calendar: .current)
                 .map { Point(date: $0.day, systolic: $0.averages.systolic, diastolic: $0.averages.diastolic, pulse: $0.averages.pulse) }
         } else {
             raw = values.map { Point(date: $0.date, systolic: Double($0.systolic), diastolic: Double($0.diastolic), pulse: $0.pulse.map(Double.init)) }
@@ -93,7 +100,12 @@ struct ChartView: View {
                             ContentUnavailableView("No readings in this period", systemImage: "chart.xyaxis.line")
                                 .frame(height: 280)
                         } else {
-                            chart.frame(height: 300)
+                            VStack(alignment: .leading, spacing: 8) {
+                                chart.frame(height: 300)
+                                Text(showEveryReading ? "Every reading" : bucket.label)
+                                    .font(.subheadline)
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
                         }
                     }
 
@@ -101,7 +113,7 @@ struct ChartView: View {
                         VStack(spacing: 4) {
                             Toggle("Show pulse", isOn: $showPulse)
                             Divider()
-                            Toggle("One point per day (average)", isOn: $dailyAverage)
+                            Toggle("Show every reading", isOn: $showEveryReading)
                         }
                         .font(.body.weight(.medium))
                         .tint(AppColors.accent)
@@ -142,17 +154,23 @@ struct ChartView: View {
                 .annotation(position: .top, alignment: .leading) {
                     Text("80").font(.caption).foregroundStyle(AppColors.stage1)
                 }
+            // Dots only while they can be told apart; beyond that the line says it.
+            let showDots = points.count <= 60
             ForEach(points) { p in
                 LineMark(x: .value("Date", p.date), y: .value("mmHg", p.systolic), series: .value("Type", "Systolic"))
                     .foregroundStyle(by: .value("Type", "Systolic"))
-                PointMark(x: .value("Date", p.date), y: .value("mmHg", p.systolic))
-                    .foregroundStyle(by: .value("Type", "Systolic"))
-                    .symbolSize(12)
+                if showDots {
+                    PointMark(x: .value("Date", p.date), y: .value("mmHg", p.systolic))
+                        .foregroundStyle(by: .value("Type", "Systolic"))
+                        .symbolSize(12)
+                }
                 LineMark(x: .value("Date", p.date), y: .value("mmHg", p.diastolic), series: .value("Type", "Diastolic"))
                     .foregroundStyle(by: .value("Type", "Diastolic"))
-                PointMark(x: .value("Date", p.date), y: .value("mmHg", p.diastolic))
-                    .foregroundStyle(by: .value("Type", "Diastolic"))
-                    .symbolSize(12)
+                if showDots {
+                    PointMark(x: .value("Date", p.date), y: .value("mmHg", p.diastolic))
+                        .foregroundStyle(by: .value("Type", "Diastolic"))
+                        .symbolSize(12)
+                }
                 if showPulse, let pulse = p.pulse {
                     LineMark(x: .value("Date", p.date), y: .value("bpm", pulse), series: .value("Type", "Pulse"))
                         .foregroundStyle(by: .value("Type", "Pulse"))

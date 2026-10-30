@@ -49,7 +49,13 @@ enum PDFGenerator {
         let url = folder.appendingPathComponent("Blood Pressure Report \(now.formatted(.iso8601.year().month().day())).pdf")
 
         let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight))
-        let chartImage = days.count > 1 ? renderChart(days) : nil
+        // Same bucketing as the Charts tab: a long report charts weekly or monthly averages.
+        let spanDays = values.first.map { calendar.dateComponents([.day], from: $0.date, to: now).day ?? 0 } ?? 0
+        let bucket = StatsEngine.ChartBucket.forSpan(days: spanDays)
+        let chartPoints = StatsEngine.periodAverages(values, by: bucket.component, calendar: calendar).map { start, avg in
+            ReadingValue(date: start, systolic: Int(avg.systolic.rounded()), diastolic: Int(avg.diastolic.rounded()), pulse: nil)
+        }
+        let chartImage = chartPoints.count > 1 ? renderChart(chartPoints) : nil
 
         let data = renderer.pdfData { context in
             var y: CGFloat = 0
@@ -149,7 +155,7 @@ enum PDFGenerator {
 
             // MARK: Chart
             if let chartImage {
-                heading("Daily averages")
+                heading(bucket.label)
                 let h = contentWidth * chartImage.size.height / chartImage.size.width
                 _ = ensure(h)
                 chartImage.draw(in: CGRect(x: margin, y: y, width: contentWidth, height: h))

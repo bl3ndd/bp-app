@@ -151,6 +151,24 @@ struct StatsEngineTests {
         #expect(days.first?.pulse == nil)
     }
 
+    @Test func weeklyAndMonthlyAverages() {
+        // Mon Oct 5 and Thu Oct 8 share a week; Mon Oct 12 starts the next one.
+        let readings = [Self.r(120, 80, day: 5), Self.r(140, 90, day: 8), Self.r(110, 70, day: 12)]
+        let weeks = StatsEngine.periodAverages(readings, by: .weekOfYear, calendar: cal)
+        #expect(weeks.count == 2)
+        #expect(weeks[0].averages.systolic == 130)
+        let months = StatsEngine.periodAverages(readings, by: .month, calendar: cal)
+        #expect(months.count == 1)
+        #expect(months[0].day == cal.dateInterval(of: .month, for: Self.date(day: 5))!.start)
+    }
+
+    @Test func chartBucketBySpan() {
+        #expect(StatsEngine.ChartBucket.forSpan(days: 30) == .day)
+        #expect(StatsEngine.ChartBucket.forSpan(days: 120) == .day)
+        #expect(StatsEngine.ChartBucket.forSpan(days: 365) == .week)
+        #expect(StatsEngine.ChartBucket.forSpan(days: 5 * 365) == .month)
+    }
+
     @Test func intervalFilter() {
         let interval = DateInterval(start: Self.date(day: 6, hour: 0), end: Self.date(day: 8, hour: 0))
         let inside = StatsEngine.readings([Self.r(120, 80, day: 5), Self.r(130, 80, day: 6), Self.r(140, 80, day: 7), Self.r(150, 80, day: 9)], in: interval)
