@@ -11,12 +11,12 @@
       "localizations" : [
         {
           "description" : "Doctor PDF report, full statistics and all-time charts",
-          "displayName" : "BP Log Pro",
+          "displayName" : "Simply BP Pro",
           "locale" : "en_US"
         }
       ],
       "productID" : "white.tea.BPLog.pro",
-      "referenceName" : "BP Log Pro",
+      "referenceName" : "Simply BP Pro",
       "type" : "NonConsumable"
     }
   ],

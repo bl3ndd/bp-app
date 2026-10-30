@@ -24,7 +24,7 @@ enum NotificationService {
     nonisolated static func requests(minutes: [Int]) -> [UNNotificationRequest] {
         Set(minutes).sorted().map { m in
             let content = UNMutableNotificationContent()
-            content.title = "BP Log"
+            content.title = "Simply BP"
             content.body = m < 12 * 60
                 ? "Good morning! Time to check your blood pressure."
                 : "Evening check: time to take your blood pressure."

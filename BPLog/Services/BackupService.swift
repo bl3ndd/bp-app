@@ -65,7 +65,7 @@ enum BackupService {
     }
 
     static func filename(now: Date = Date()) -> String {
-        "bp-log-backup-\(now.formatted(.iso8601.year().month().day()))"
+        "simply-bp-backup-\(now.formatted(.iso8601.year().month().day()))"
     }
 }
 

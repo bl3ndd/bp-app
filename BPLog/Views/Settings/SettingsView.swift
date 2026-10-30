@@ -81,7 +81,7 @@ struct SettingsView: View {
 
                 Section("Purchases") {
                     if purchases.isPro {
-                        Label("BP Log Pro is unlocked", systemImage: "checkmark.seal.fill")
+                        Label("Simply BP Pro is unlocked", systemImage: "checkmark.seal.fill")
                             .foregroundStyle(AppColors.normal)
                     }
                     Button("Restore Purchases") {
@@ -93,7 +93,7 @@ struct SettingsView: View {
                 Section("About") {
                     Link(destination: AppLinks.privacyPolicy) { Label("Privacy Policy", systemImage: "hand.raised.fill") }
                     Link(destination: AppLinks.support) { Label("Contact Support", systemImage: "envelope.fill") }
-                    Text("BP Log is not a medical device and does not measure blood pressure. It records the readings you take with your own monitor. Always check with your doctor before making medical decisions.")
+                    Text("Simply BP is not a medical device and does not measure blood pressure. It records the readings you take with your own monitor. Always check with your doctor before making medical decisions.")
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
                     Text("High blood pressure categories follow the 2017 ACC/AHA guideline. \"Low\" marks readings below 90/60, a commonly used threshold.")
@@ -113,7 +113,7 @@ struct SettingsView: View {
             .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json]) { result in
                 restore(result)
             }
-            .alert("BP Log", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {
+            .alert("Simply BP", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(message ?? "")
@@ -150,7 +150,7 @@ struct SettingsView: View {
 
     private func setReminder(morning: Bool, to minutes: Int?) async {
         if minutes != nil, !(await NotificationService.requestPermission()) {
-            message = "Notifications are off for BP Log. Turn them on in the Settings app to get reminders."
+            message = "Notifications are off for Simply BP. Turn them on in the Settings app to get reminders."
             return
         }
         var list = settings.reminderMinutes.filter { ReminderTime.isMorning($0) != morning }
@@ -180,7 +180,7 @@ struct SettingsView: View {
         let imported = await HealthService.importNew(into: context)
         let saved = await HealthService.backfill(context)
         syncing = false
-        message = "Brought in \(imported) readings from Apple Health and saved \(saved) to it. If nothing moved, check Settings › Health › Data Access & Devices › BP Log and allow blood pressure and heart rate."
+        message = "Brought in \(imported) readings from Apple Health and saved \(saved) to it. If nothing moved, check Settings › Health › Data Access & Devices › Simply BP and allow blood pressure and heart rate."
     }
 
     private func prepareBackup() {
@@ -200,7 +200,7 @@ struct SettingsView: View {
             let outcome = try BackupService.restore(from: try Data(contentsOf: url), into: context)
             message = "Added \(outcome.added) readings. Skipped \(outcome.skipped) you already had."
         } catch {
-            message = "This file doesn't look like a BP Log backup."
+            message = "This file doesn't look like a Simply BP backup."
         }
     }
 }

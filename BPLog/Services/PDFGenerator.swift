@@ -35,7 +35,7 @@ enum PDFGenerator {
     private static let tableFont = UIFont.systemFont(ofSize: 9)
     private static let tableBold = UIFont.systemFont(ofSize: 9, weight: .semibold)
 
-    static let disclaimer = "Readings were taken by the patient with a home blood pressure monitor and recorded in BP Log. BP Log is not a medical device. Categories follow the 2017 ACC/AHA guideline; \"Low\" marks readings below 90/60."
+    static let disclaimer = "Readings were taken by the patient with a home blood pressure monitor and recorded in Simply BP. Simply BP is not a medical device. Categories follow the 2017 ACC/AHA guideline; \"Low\" marks readings below 90/60."
 
     static func generate(readings: [ReportReading], interval: DateInterval?, patientName: String,
                          targetSystolic: Int = 130, targetDiastolic: Int = 80,

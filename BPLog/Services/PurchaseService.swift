@@ -1,7 +1,7 @@
 import Foundation
 import StoreKit
 
-/// BP Log Pro is a single non-consumable unlock. StoreKit 2 keeps the
+/// Simply BP Pro is a single non-consumable unlock. StoreKit 2 keeps the
 /// entitlement itself, so nothing about the purchase is persisted here —
 /// asking StoreKit on every launch is both simpler and harder to spoof than
 /// mirroring a flag into UserDefaults.

@@ -1,4 +1,4 @@
-# BP Log — product spec (v1)
+# Simply BP — product spec (v1)
 
 A blood pressure diary for US adults 50+: type readings from a home monitor, see categories, daily averages and trends, share a doctor report. Niche research and rationale: `PLAN.md` (Overview) and `ASO.md`.
 

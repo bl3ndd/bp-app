@@ -19,10 +19,10 @@ Searchers phrase it as "blood pressure", rarely "BP" alone; apps from the top of
 
 ## Metadata
 
-- **Name (30/30):** `Blood Pressure Log: BP Tracker`
-- **Subtitle (29/30):** `Diary, Charts & Doctor Report`
-- **Keywords (100/100), no repeats of name/subtitle words:**
-  `pulse,heart,rate,hypertension,health,journal,record,systolic,diastolic,reading,cuff,high,low,average`
+- **Name (29/30):** `Simply BP: Blood Pressure Log` — brand "Simply BP" checked free in the US App Store on 2026-10-30 (0 apps with the word); it states our promise (simple, vs. SmartBP's paywall-everywhere complaints) and adds "BP" for bp log / bp tracker searches. A brand before the phrase doesn't hurt ranking: "Mezame — CBT Thought Journal" is #1 for its phrase.
+- **Subtitle (28/30):** `Tracker, Charts & Doctor PDF`
+- **Keywords (98/100), no repeats of name/subtitle words:**
+  `pulse,heart,rate,hypertension,health,journal,record,systolic,diastolic,reading,cuff,high,low,diary`
 - **Primary category:** Health & Fitness (not Medical). **Secondary:** Medical.
 - **Age rating:** answer honestly; medical/treatment information = "infrequent/mild" at most.
 
@@ -36,7 +36,7 @@ Log your blood pressure in seconds, see daily averages and trends, and bring a c
 
 Keep a simple, reliable record of your blood pressure — and know what your numbers are doing.
 
-BP Log is a blood pressure diary for the readings you take with your own home monitor. Add a reading in seconds, see it colored by the standard blood pressure categories, and watch your daily averages and trends over time.
+Simply BP is a blood pressure diary for the readings you take with your own home monitor. Add a reading in seconds, see it colored by the standard blood pressure categories, and watch your daily averages and trends over time.
 
 WHAT YOU GET FREE
 • Fast entry: top number, bottom number and pulse, with arm, position, tags and notes
@@ -54,7 +54,7 @@ BP LOG PRO — ONE-TIME PURCHASE
 
 No subscription. No ads. No account. Your readings stay on your devices and in Apple Health — we never see them.
 
-BP Log is not a medical device and does not measure blood pressure. Always talk to your doctor before making medical decisions.
+Simply BP is not a medical device and does not measure blood pressure. Always talk to your doctor before making medical decisions.
 
 ## Screenshot captions (draft, design pass later)
 
@@ -67,11 +67,11 @@ BP Log is not a medical device and does not measure blood pressure. Always talk 
 
 ## Notes for Review (2.3.1(a))
 
-BP Log is a blood pressure diary. It does not measure blood pressure with device sensors; users type readings from their own home monitor.
+Simply BP is a blood pressure diary. It does not measure blood pressure with device sensors; users type readings from their own home monitor.
 
 How to review: complete the 3-step onboarding (Apple Health and reminders can be skipped). On Home tap "Add Reading", enter e.g. 128 / 82 / 70 and Save. Add a few more readings to see History, Charts and Stats populate.
 
 - HealthKit: reads and writes blood pressure (systolic/diastolic correlation) and heart rate, only after the user turns on Settings › Apple Health. Samples we write are marked HKMetadataKeyWasUserEntered. Health data is never sent anywhere: the app has no network calls, analytics or ads.
 - Storage: local SwiftData store only. No iCloud/CloudKit (5.1.3(ii)). The JSON backup is created only when the user taps "Back Up Readings" and is saved wherever the user chooses with the system file picker.
-- In-App Purchase: one non-consumable, "BP Log Pro" (`white.tea.BPLog.pro`), $14.99. It unlocks the doctor PDF report (Home or Stats › Doctor Report), full statistics (Stats tab), and 90D/1Y/All chart ranges. Restore Purchases is in the paywall and in Settings. Pro features don't require HealthKit access.
+- In-App Purchase: one non-consumable, "Simply BP Pro" (`white.tea.BPLog.pro`), $14.99. It unlocks the doctor PDF report (Home or Stats › Doctor Report), full statistics (Stats tab), and 90D/1Y/All chart ranges. Restore Purchases is in the paywall and in Settings. Pro features don't require HealthKit access.
 - Medical: categories follow the 2017 ACC/AHA guideline; "Low" (below 90/60) is a separate, commonly used threshold. The app reminds users to consult a doctor in onboarding, in Settings › About and on every report page; crisis-range readings show a banner pointing to their doctor or 911 / local emergency number. No diagnosis or treatment advice.

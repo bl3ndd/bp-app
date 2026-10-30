@@ -54,6 +54,6 @@ struct BackupServiceTests {
 
     @Test func filenameHasDate() {
         let name = BackupService.filename(now: Date(timeIntervalSince1970: 1_800_000_000))
-        #expect(name.hasPrefix("bp-log-backup-2027-01-"))
+        #expect(name.hasPrefix("simply-bp-backup-2027-01-"))
     }
 }

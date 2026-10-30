@@ -50,7 +50,7 @@ struct OnboardingView: View {
             bullet("doc.richtext", "Share a doctor-ready report.")
             HStack(alignment: .top, spacing: 10) {
                 Image(systemName: "info.circle.fill").font(.title2).foregroundStyle(AppColors.accent)
-                Text("BP Log is not a medical device and doesn't measure blood pressure. Always check with your doctor before making medical decisions.")
+                Text("Simply BP is not a medical device and doesn't measure blood pressure. Always check with your doctor before making medical decisions.")
                     .font(.body.weight(.semibold))
                     .foregroundStyle(AppColors.textPrimary)
                     .fixedSize(horizontal: false, vertical: true)

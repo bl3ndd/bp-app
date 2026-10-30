@@ -1,4 +1,4 @@
-# BP Log
+# Simply BP
 
 iOS blood pressure diary. SwiftUI, SwiftData, Swift Charts, HealthKit, StoreKit 2. No third-party packages. iOS 18+.
 
@@ -9,7 +9,7 @@ Docs: `SPEC.md` (what the app does), `PLAN.md` (implementation plan), `ASO.md` (
 Open `BPLog.xcodeproj`, scheme **BPLog**, run on a device.
 
 - **StoreKit:** Product › Scheme › Edit Scheme › Run › Options › StoreKit Configuration › `BPLog.storekit`, so the Pro purchase works without App Store Connect.
-- **HealthKit:** turn on Settings › Apple Health in the app. To simulate a smart cuff, add a blood pressure sample in the Health app, then reopen BP Log.
+- **HealthKit:** turn on Settings › Apple Health in the app. To simulate a smart cuff, add a blood pressure sample in the Health app, then reopen Simply BP.
 
 Launch arguments (Debug only):
 

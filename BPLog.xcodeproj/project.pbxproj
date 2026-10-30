@@ -375,8 +375,9 @@
 				DEVELOPMENT_TEAM = A89ST3SFXS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "BP Log reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "BP Log saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
+				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Simply BP reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Simply BP saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -410,8 +411,9 @@
 				DEVELOPMENT_TEAM = A89ST3SFXS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "BP Log reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "BP Log saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
+				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Simply BP reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Simply BP saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

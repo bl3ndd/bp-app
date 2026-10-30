@@ -17,7 +17,7 @@ struct PaywallView: View {
                             .font(.system(size: 56))
                             .foregroundStyle(AppColors.accent)
                             .padding(.top, 12)
-                        Text("BP Log Pro")
+                        Text("Simply BP Pro")
                             .font(.largeTitle.bold())
                             .foregroundStyle(AppColors.textPrimary)
                         Text("One price. Yours forever.")
