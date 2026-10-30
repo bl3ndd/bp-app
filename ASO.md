@@ -25,8 +25,9 @@ Searchers phrase it as "blood pressure", rarely "BP" alone; apps from the top of
 
 - **Name (29/30):** `Simply BP: Blood Pressure Log` — brand "Simply BP" checked free in the US App Store on 2026-10-30 (0 apps with the word); it states our promise (simple, vs. SmartBP's paywall-everywhere complaints) and adds "BP" for bp log / bp tracker searches. A brand before the phrase doesn't hurt ranking: "Mezame — CBT Thought Journal" is #1 for its phrase.
 - **Subtitle (28/30):** `Tracker, Charts & Doctor PDF`
-- **Keywords (98/100), no repeats of name/subtitle words:**
-  `pulse,heart,rate,hypertension,health,journal,record,systolic,diastolic,reading,cuff,high,low,diary`
+- **Keywords (85/100), no repeats of name/subtitle words:**
+  `monitor,pulse,heart,rate,high,health,diary,vitals,check,cardio,heartbeat,bpm,wellness`
+  Chosen from two popularity runs on 2026-10-30 (`aso-keywords/results_keywords_meta*_us.csv`): live words only — monitor (bp monitor 45, blood pressure monitor 51), pulse 60, heart rate 50, health (tracker) 42, high (blood pressure) 35, diary (bp diary 19), vitals 40, check (blood pressure check 23), cardio 43, heartbeat 46, bpm 43, wellness 44. Dropped as dead (popularity 5): hypertension, journal, record, readings, chart, low, systolic, diastolic, cuff, average, report, history, hypotension.
 - **Primary category:** Health & Fitness (not Medical). **Secondary:** Medical.
 - **Age rating:** answer honestly; medical/treatment information = "infrequent/mild" at most.
 
