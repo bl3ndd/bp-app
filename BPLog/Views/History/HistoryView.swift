@@ -7,10 +7,25 @@ struct HistoryView: View {
     @Query(sort: \Reading.date, order: .reverse) private var readings: [Reading]
     @State private var editing: Reading?
     @State private var pendingDelete: Reading?
+    @State private var searchText = ""
+    /// First day of the shown month; nil shows every month.
+    @State private var month: Date?
+
+    private var isFiltering: Bool { month != nil || !searchText.trimmingCharacters(in: .whitespaces).isEmpty }
+
+    private var filtered: [Reading] {
+        let calendar = Calendar.current
+        return readings.filter { r in
+            HistoryFilter.isIn(month: month, r.date, calendar: calendar)
+                && HistoryFilter.matches(HistoryFilter.Item(value: r.value, tags: r.tags, note: r.note), query: searchText)
+        }
+    }
+
+    private var months: [Date] { HistoryFilter.months(readings.map(\.date), calendar: .current) }
 
     private var days: [(day: Date, readings: [Reading])] {
         let calendar = Calendar.current
-        return Dictionary(grouping: readings) { calendar.startOfDay(for: $0.date) }
+        return Dictionary(grouping: filtered) { calendar.startOfDay(for: $0.date) }
             .map { ($0.key, $0.value) }
             .sorted { $0.day > $1.day }
     }
@@ -21,6 +36,9 @@ struct HistoryView: View {
                 if readings.isEmpty {
                     ContentUnavailableView("No readings yet", systemImage: "list.bullet.rectangle",
                                            description: Text("Readings you add or import from Apple Health show up here."))
+                } else if isFiltering && filtered.isEmpty {
+                    ContentUnavailableView("No matching readings", systemImage: "magnifyingglass",
+                                           description: Text("Try another month or search for a number, a tag or a word from a note."))
                 } else {
                     List {
                         ForEach(days, id: \.day) { day in
@@ -45,6 +63,12 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("History")
+            .searchable(text: $searchText, prompt: "Number, tag or note")
+            .toolbar {
+                if !readings.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) { monthMenu }
+                }
+            }
             .scrollContentBackground(.hidden)
             .background(AppColors.bgApp)
             .sheet(item: $editing) { AddReadingView(editing: $0) }
@@ -74,6 +98,23 @@ struct HistoryView: View {
                     .foregroundStyle(BPCategory.classify(systolic: sys, diastolic: dia).color)
             }
         }
+    }
+
+    /// Months that have readings, newest first, plus "All months".
+    private var monthMenu: some View {
+        Menu {
+            Picker("Month", selection: $month) {
+                Text("All months").tag(Date?.none)
+                ForEach(months, id: \.self) { m in
+                    Text(m.formatted(.dateTime.month(.wide).year())).tag(Optional(m))
+                }
+            }
+        } label: {
+            Label(month?.formatted(.dateTime.month(.abbreviated).year()) ?? "All months",
+                  systemImage: month == nil ? "calendar" : "calendar.badge.checkmark")
+                .labelStyle(.titleAndIcon)
+        }
+        .accessibilityLabel("Filter by month")
     }
 
     private func row(_ r: Reading) -> some View {
