@@ -64,7 +64,12 @@ final class PurchaseService {
             // treat it as no purchase rather than unlocking on trust.
             guard let transaction = try? verification.payloadValue else { return false }
             await transaction.finish()
-            await refreshEntitlement()
+            // Trust the verified transaction itself: the entitlement list can lag
+            // a couple of seconds behind (measured in StoreKit testing), and
+            // checking it right away left the buyer on the paywall without Pro.
+            if transaction.productID == Self.productID, transaction.revocationDate == nil {
+                isPro = true
+            }
             return isPro
         case .pending, .userCancelled:
             return false
@@ -81,7 +86,12 @@ final class PurchaseService {
         isWorking = true
         defer { isWorking = false }
         try? await AppStore.sync()
-        await refreshEntitlement()
+        // Entitlements can take a moment to appear after a sync; give them a few seconds.
+        for attempt in 0..<4 {
+            await refreshEntitlement()
+            if isPro || attempt == 3 { break }
+            try? await Task.sleep(for: .seconds(1))
+        }
     }
 
     /// Deliberately on the deprecated singular API: its replacement,
