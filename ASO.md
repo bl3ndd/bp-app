@@ -46,10 +46,11 @@ Simply BP is a blood pressure diary for the readings you take with your own home
 WHAT YOU GET FREE
 • Fast entry: top number, bottom number and pulse, with arm, position, tags and notes
 • Categories from the 2017 ACC/AHA guideline, plus a "Low" flag below 90/60
-• History with daily averages when you take several readings a day
+• History with daily averages when you take several readings a day, plus search and a filter by day or month
 • 7- and 30-day charts
 • Apple Health: readings you add are saved to Health, and readings from a smart monitor show up here automatically. Apple Health keeps your history in sync across your devices.
 • Morning and evening reminders
+• Home Screen and Lock Screen widgets: your latest reading, and one tap to add a new one
 • Backup to a file you keep, and restore any time
 
 BP LOG PRO — ONE-TIME PURCHASE
@@ -78,7 +79,7 @@ With TelemetryDeck the answer is no longer "Data Not Collected". Declare: **Usag
 
 Simply BP is a blood pressure diary. It does not measure blood pressure with device sensors; users type readings from their own home monitor.
 
-How to review: complete the 3-step onboarding (Apple Health and reminders can be skipped). On Home tap "Add Reading", enter e.g. 128 / 82 / 70 and Save. Add a few more readings to see History, Charts and Stats populate.
+How to review: complete the 4-step onboarding (the target, Apple Health and reminders can be skipped). On Home tap "Add Reading", enter e.g. 128 / 82 / 70 and Save. Add a few more readings to see History, Charts and Stats populate.
 
 - HealthKit: reads and writes blood pressure (systolic/diastolic correlation) and heart rate, only after the user turns on Settings › Apple Health. Samples we write are marked HKMetadataKeyWasUserEntered. Health data is never sent anywhere. The only network traffic is anonymous feature-usage counts via TelemetryDeck (event names only, no health data; opt-out in Settings › Privacy); no ads.
 - Storage: local SwiftData store only. No iCloud/CloudKit (5.1.3(ii)). The JSON backup is created only when the user taps "Back Up Readings" and is saved wherever the user chooses with the system file picker.
