@@ -25,3 +25,15 @@ struct DemoDataTests {
         #expect(StatsEngine.trend(days)!.systolicPerWeek < 0)
     }
 }
+
+extension DemoDataTests {
+    /// Store screenshots come from this data: it should show a varied, improving picture.
+    @Test func showsVariedCategoriesForScreenshots() {
+        let days = StatsEngine.daily(DemoData.samples(now: now, calendar: calendar).map(\.value), calendar: calendar)
+        let distribution = StatsEngine.categoryDistribution(days)
+        #expect((distribution[.normal] ?? 0) > 0)
+        #expect((distribution[.elevated] ?? 0) > 0)
+        #expect((distribution[.stage1] ?? 0) > 0)
+        #expect(StatsEngine.timeInRange(days, systolicBelow: 130, diastolicBelow: 80)! > 0.25)
+    }
+}

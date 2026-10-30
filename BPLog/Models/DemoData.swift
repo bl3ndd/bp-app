@@ -1,7 +1,7 @@
 import Foundation
 
 /// Two months of believable readings for `-DEMO`: morning and evening, sometimes
-/// two in a row, slowly improving from Stage 1–2 toward Elevated, with noise, a
+/// two in a row, slowly improving from Stage 1 toward Normal, with noise, a
 /// few spikes and lows, tags and the odd missed day. Deterministic, so a demo
 /// looks the same every launch.
 nonisolated enum DemoData {
@@ -18,8 +18,8 @@ nonisolated enum DemoData {
             guard let day = calendar.date(byAdding: .day, value: -dayOffset, to: today) else { continue }
             if rng.next(100) < 8 { continue }  // missed day
             let progress = Double(days - 1 - dayOffset) / Double(max(days - 1, 1))
-            let baseSys = 141 - 14 * progress
-            let baseDia = 90 - 9 * progress
+            let baseSys = 137 - 16 * progress
+            let baseDia = 85 - 11 * progress
             for (hour, eveningBump) in [(7, 0.0), (20, -4.0)] {
                 if hour == 20, rng.next(100) < 25 { continue }  // skipped evening
                 let count = rng.next(100) < 30 ? 2 : 1
