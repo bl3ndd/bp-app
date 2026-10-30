@@ -79,9 +79,9 @@ struct OnboardingView: View {
                 .foregroundStyle(AppColors.textSecondary)
             CardView {
                 VStack(spacing: 12) {
-                    reminderRow("Morning", isOn: $morningOn, time: $morning)
+                    reminderRow("Morning", isOn: $morningOn, time: $morning, range: 0...(12 * 60 - 1))
                     Divider()
-                    reminderRow("Evening", isOn: $eveningOn, time: $evening)
+                    reminderRow("Evening", isOn: $eveningOn, time: $evening, range: (12 * 60)...(24 * 60 - 1))
                 }
             }
         }
@@ -105,11 +105,15 @@ struct OnboardingView: View {
         }
     }
 
-    private func reminderRow(_ title: String, isOn: Binding<Bool>, time: Binding<Date>) -> some View {
+    /// `range` is minutes since midnight: morning stays before noon, evening after.
+    private func reminderRow(_ title: String, isOn: Binding<Bool>, time: Binding<Date>, range: ClosedRange<Int>) -> some View {
         HStack {
             Toggle(title, isOn: isOn).font(.title3.weight(.medium)).tint(AppColors.accent)
             if isOn.wrappedValue {
-                DatePicker(title, selection: time, displayedComponents: .hourAndMinute).labelsHidden()
+                DatePicker(title, selection: time,
+                           in: ReminderTime.date(fromMinutes: range.lowerBound)...ReminderTime.date(fromMinutes: range.upperBound),
+                           displayedComponents: .hourAndMinute)
+                    .labelsHidden()
             }
         }
     }
@@ -132,7 +136,7 @@ struct OnboardingView: View {
             Task {
                 if await HealthService.requestAuthorization() {
                     settings.healthEnabled = true
-                    await HealthService.importNew(into: context)
+                    await HealthService.importNew(into: context, deletedIDs: settings.deletedIDs)
                     await HealthService.backfill(context)
                 }
                 next()

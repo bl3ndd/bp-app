@@ -8,7 +8,8 @@ struct HomeView: View {
     @State private var showingReport = false
 
     private var lastWeek: [ReadingValue] {
-        let since = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? .distantPast
+        let calendar = Calendar.current
+        let since = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: Date())) ?? .distantPast
         return readings.prefix { $0.date >= since }.map(\.value)
     }
 
@@ -167,7 +168,7 @@ struct CrisisBanner: View {
         .foregroundStyle(.white)
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous).fill(AppColors.crisis))
+        .background(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous).fill(AppColors.crisisFill))
         .accessibilityElement(children: .combine)
     }
 }

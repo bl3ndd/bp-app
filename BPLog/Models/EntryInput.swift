@@ -4,7 +4,7 @@ import Foundation
 nonisolated enum EntryInput {
     /// Keeps digits only, at most three.
     static func sanitize(_ text: String) -> String {
-        String(text.filter(\.isNumber).prefix(3))
+        String(text.filter { $0.isASCII && $0.isNumber }.prefix(3))
     }
 
     /// A value is finished at three digits, or at two when it can't grow into a

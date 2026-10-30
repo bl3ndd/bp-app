@@ -103,6 +103,7 @@ struct WidgetView: View {
     private func latest(_ s: WidgetSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text("\(s.systolic)/\(s.diastolic)")
+                .privacySensitive()
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .minimumScaleFactor(0.6)
                 .lineLimit(1)
@@ -130,7 +131,7 @@ struct WidgetView: View {
         VStack(alignment: .leading, spacing: 0) {
             Label("Blood pressure", systemImage: "heart.fill").font(.caption2.weight(.semibold))
             if let s = entry.snapshot {
-                Text("\(s.systolic)/\(s.diastolic)").font(.system(size: 22, weight: .bold, design: .rounded))
+                Text("\(s.systolic)/\(s.diastolic)").font(.system(size: 22, weight: .bold, design: .rounded)).privacySensitive()
                 Text(s.categoryTitle).font(.caption2)
             } else {
                 Text("Tap to add a reading").font(.caption)
@@ -144,9 +145,9 @@ struct WidgetView: View {
             AccessoryWidgetBackground()
             if let s = entry.snapshot {
                 VStack(spacing: -2) {
-                    Text("\(s.systolic)").font(.system(size: 17, weight: .bold, design: .rounded))
+                    Text("\(s.systolic)").font(.system(size: 17, weight: .bold, design: .rounded)).privacySensitive()
                     Rectangle().frame(width: 22, height: 1.5)
-                    Text("\(s.diastolic)").font(.system(size: 15, weight: .semibold, design: .rounded))
+                    Text("\(s.diastolic)").font(.system(size: 15, weight: .semibold, design: .rounded)).privacySensitive()
                 }
             } else {
                 Image(systemName: "plus").font(.title2.weight(.bold))

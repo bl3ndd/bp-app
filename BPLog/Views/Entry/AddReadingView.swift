@@ -32,9 +32,10 @@ struct AddReadingView: View {
     private var sys: Int? { Int(systolic) }
     private var dia: Int? { Int(diastolic) }
     private var pul: Int? { pulse.isEmpty ? nil : Int(pulse) }
+    /// Imported numbers are read-only and belong to the cuff's app: never block saving tags or a note on them.
     private var isValid: Bool {
         guard let sys, let dia else { return false }
-        return ReadingLimits.isValid(systolic: sys, diastolic: dia, pulse: pul)
+        return isImported || ReadingLimits.isValid(systolic: sys, diastolic: dia, pulse: pul)
     }
 
     /// Held back while the focused number is still being typed: "20" may be on its way somewhere.
@@ -99,7 +100,7 @@ struct AddReadingView: View {
                                         .padding(.horizontal, 14)
                                         .padding(.vertical, 9)
                                         .foregroundStyle(on ? .white : AppColors.textPrimary)
-                                        .background(Capsule().fill(on ? AppColors.accent : AppColors.bgInput))
+                                        .background(Capsule().fill(on ? AppColors.accentFill : AppColors.bgInput))
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityAddTraits(on ? .isSelected : [])
@@ -254,12 +255,21 @@ struct AddReadingView: View {
         if settings.healthEnabled, reading.source == .manual {
             let value = reading.value
             let meta = HealthMeta(reading)
+            let readingID = reading.id
             Task {
                 if let id = previous?.id, let oldDate = previous?.date {
                     await HealthService.delete(healthKitID: id, date: oldDate)
                 }
-                reading.healthKitID = await HealthService.save(value, meta: meta)
-                try? context.save()
+                guard let newID = await HealthService.save(value, meta: meta) else { return }
+                // The reading may have been deleted while Health was saving: then
+                // take the copy back out instead of writing to a deleted model.
+                let match = FetchDescriptor<Reading>(predicate: #Predicate { $0.id == readingID })
+                if let current = try? context.fetch(match).first {
+                    current.healthKitID = newID
+                    try? context.save()
+                } else {
+                    await HealthService.delete(healthKitID: newID, date: value.date)
+                }
             }
         }
         dismiss()

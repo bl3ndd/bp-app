@@ -5,5 +5,5 @@ import Foundation
 /// into App Store Connect).
 enum AppLinks {
     static let privacyPolicy = URL(string: "https://bp-app-site.vercel.app/privacy.html")!
-    static let support = URL(string: "mailto:woodoo2013@gmail.com?subject=BP%20Log")!
+    static let support = URL(string: "mailto:woodoo2013@gmail.com?subject=Simply%20BP")!
 }

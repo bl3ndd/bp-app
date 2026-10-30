@@ -126,36 +126,56 @@ enum HealthService {
         _ = try? await store.deleteObjects(of: heartRate, predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [own, atDate]))
     }
 
-    /// Every blood pressure correlation since `since`, from any source, with the closest pulse attached.
-    static func fetchReadings(since: Date) async -> [HealthReading] {
+    /// Every blood pressure correlation since `since`, from any source, without pulse.
+    static func fetchCorrelations(since: Date) async -> [HealthReading] {
         guard isAvailable else { return [] }
         let range = HKQuery.predicateForSamples(withStart: since, end: nil)
-        let pressureQuery = HKSampleQueryDescriptor(predicates: [.correlation(type: pressure, predicate: range)], sortDescriptors: [])
-        let pulseQuery = HKSampleQueryDescriptor(predicates: [.quantitySample(type: heartRate, predicate: range)], sortDescriptors: [])
-        guard let correlations = try? await pressureQuery.result(for: store) else { return [] }
-        let pulses = ((try? await pulseQuery.result(for: store)) ?? [])
-            .map { (date: $0.startDate, bpm: Int($0.quantity.doubleValue(for: bpm).rounded())) }
-
+        let query = HKSampleQueryDescriptor(predicates: [.correlation(type: pressure, predicate: range)], sortDescriptors: [])
+        guard let correlations = try? await query.result(for: store) else { return [] }
         return correlations.compactMap { c in
             guard let sys = (c.objects(for: systolic).first as? HKQuantitySample)?.quantity.doubleValue(for: mmHg),
                   let dia = (c.objects(for: diastolic).first as? HKQuantitySample)?.quantity.doubleValue(for: mmHg)
             else { return nil }
             return HealthReading(id: c.uuid, date: c.startDate, systolic: Int(sys.rounded()), diastolic: Int(dia.rounded()),
-                                 pulse: closestPulse(to: c.startDate, in: pulses),
-                                 sourceBundleID: c.sourceRevision.source.bundleIdentifier,
+                                 pulse: nil, sourceBundleID: c.sourceRevision.source.bundleIdentifier,
                                  meta: HealthMeta(metadata: c.metadata))
         }
+    }
+
+    /// Fills in the pulse a cuff wrote next to each reading. Queries only small
+    /// windows around these readings: an Apple Watch keeps hundreds of thousands
+    /// of heart rate samples, and fetching them all froze the app.
+    static func attachPulses(_ readings: [HealthReading]) async -> [HealthReading] {
+        guard isAvailable, !readings.isEmpty else { return readings }
+        var result = readings
+        for start in stride(from: 0, to: readings.count, by: 50) {
+            let chunk = start..<min(start + 50, readings.count)
+            let windows = chunk.map {
+                HKQuery.predicateForSamples(withStart: readings[$0].date.addingTimeInterval(-pulseMatchWindow),
+                                            end: readings[$0].date.addingTimeInterval(pulseMatchWindow))
+            }
+            let query = HKSampleQueryDescriptor(
+                predicates: [.quantitySample(type: heartRate, predicate: NSCompoundPredicate(orPredicateWithSubpredicates: windows))],
+                sortDescriptors: [])
+            let pulses = ((try? await query.result(for: store)) ?? [])
+                .map { (date: $0.startDate, bpm: Int($0.quantity.doubleValue(for: bpm).rounded())) }
+            for i in chunk {
+                result[i].pulse = closestPulse(to: readings[i].date, in: pulses)
+            }
+        }
+        return result
     }
 
     /// Imports readings we don't have yet — from cuffs and other apps, and our
     /// own writes synced from another device or left from a previous install.
     /// Returns how many were added.
     @discardableResult
-    static func importNew(into context: ModelContext) async -> Int {
+    static func importNew(into context: ModelContext, deletedIDs: Set<UUID>) async -> Int {
         let since = Calendar.current.date(byAdding: .year, value: -5, to: Date()) ?? .distantPast
-        let health = await fetchReadings(since: since)
+        let health = await fetchCorrelations(since: since)
         let local = (try? context.fetch(FetchDescriptor<Reading>())) ?? []
-        let fresh = newImports(health, existingHealthIDs: Set(local.compactMap(\.healthKitID)), existingReadingIDs: Set(local.map(\.id)))
+        let fresh = await attachPulses(newImports(health, existingHealthIDs: Set(local.compactMap(\.healthKitID)),
+                                                  existingReadingIDs: Set(local.map(\.id)), deletedIDs: deletedIDs))
         let ownBundleID = Bundle.main.bundleIdentifier ?? ""
         for h in fresh {
             context.insert(makeReading(h, ownBundleID: ownBundleID))
@@ -182,10 +202,14 @@ enum HealthService {
     }
 
     /// Skips what we already hold, matched both on the Health sample and on our
-    /// own reading id — a reading restored from a JSON backup and its Health copy are one reading.
-    nonisolated static func newImports(_ health: [HealthReading], existingHealthIDs: Set<UUID>, existingReadingIDs: Set<UUID>) -> [HealthReading] {
+    /// own reading id — a reading restored from a JSON backup and its Health copy
+    /// are one reading — and anything the user deleted here.
+    nonisolated static func newImports(_ health: [HealthReading], existingHealthIDs: Set<UUID>, existingReadingIDs: Set<UUID>,
+                                       deletedIDs: Set<UUID> = []) -> [HealthReading] {
         health.filter { h in
-            !existingHealthIDs.contains(h.id) && !(h.meta.readingID.map(existingReadingIDs.contains) ?? false)
+            let known = existingHealthIDs.union(deletedIDs)
+            let readingKnown = h.meta.readingID.map { existingReadingIDs.contains($0) || deletedIDs.contains($0) } ?? false
+            return !known.contains(h.id) && !readingKnown
         }
     }
 

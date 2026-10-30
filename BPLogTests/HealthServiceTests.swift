@@ -72,3 +72,21 @@ struct HealthServiceTests {
         #expect(HealthService.closestPulse(to: Self.t0, in: []) == nil)
     }
 }
+
+extension HealthServiceTests {
+    @Test func deletedReadingsNeverComeBack() {
+        let cuff = Self.h()
+        let mineID = UUID()
+        let mine = Self.h(source: Self.own, meta: HealthMeta(readingID: mineID))
+        let fresh = HealthService.newImports([cuff, mine], existingHealthIDs: [], existingReadingIDs: [],
+                                             deletedIDs: [cuff.id, mineID])
+        #expect(fresh.isEmpty)
+    }
+
+    @MainActor @Test func deletionsArePersisted() {
+        let defaults = UserDefaults(suiteName: "HealthServiceTests-\(UUID())")!
+        let id = UUID()
+        AppSettings(defaults: defaults).rememberDeleted([id])
+        #expect(AppSettings(defaults: defaults).deletedIDs == [id])
+    }
+}

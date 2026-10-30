@@ -85,7 +85,7 @@ struct SettingsView: View {
                             .foregroundStyle(AppColors.normal)
                     }
                     Button("Restore Purchases") {
-                        Task { await purchases.restore() }
+                        Task { message = PurchaseService.message(for: await purchases.restore()) }
                     }
                     .disabled(purchases.isWorking)
                 }
@@ -190,7 +190,7 @@ struct SettingsView: View {
     /// Pull first, so readings synced from another device aren't written back as duplicates.
     private func syncNow() async {
         syncing = true
-        let imported = await HealthService.importNew(into: context)
+        let imported = await HealthService.importNew(into: context, deletedIDs: settings.deletedIDs)
         let saved = await HealthService.backfill(context)
         syncing = false
         Analytics.track(.healthSynced)

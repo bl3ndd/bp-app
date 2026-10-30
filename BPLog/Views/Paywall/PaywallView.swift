@@ -9,6 +9,7 @@ struct PaywallView: View {
     @Environment(PurchaseService.self) private var purchases
     @Environment(\.dismiss) private var dismiss
     @State private var failed = false
+    @State private var restoreMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -52,8 +53,12 @@ struct PaywallView: View {
 
                     Button("Restore Purchases") {
                         Task {
-                            await purchases.restore()
-                            if purchases.isPro { Analytics.track(.proRestored, ["from": source]) }
+                            let outcome = await purchases.restore()
+                            if outcome == .restored {
+                                Analytics.track(.proRestored, ["from": source])
+                            } else {
+                                restoreMessage = PurchaseService.message(for: outcome)
+                            }
                         }
                     }
                     .font(.body.weight(.medium))
@@ -72,6 +77,11 @@ struct PaywallView: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text("Please try again, or tap Restore Purchases if you've bought Pro before.")
+            }
+            .alert("Restore Purchases", isPresented: Binding(get: { restoreMessage != nil }, set: { if !$0 { restoreMessage = nil } })) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(restoreMessage ?? "")
             }
             .onChange(of: purchases.isPro) { _, isPro in
                 if isPro { dismiss() }

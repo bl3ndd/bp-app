@@ -24,7 +24,7 @@ enum WidgetBridge {
 
     nonisolated static func snapshot(_ readings: [ReadingValue], now: Date, calendar: Calendar) -> WidgetSnapshot? {
         guard let last = readings.max(by: { $0.date < $1.date }) else { return nil }
-        let since = calendar.date(byAdding: .day, value: -7, to: now) ?? .distantPast
+        let since = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: now)) ?? .distantPast
         let week = StatsEngine.averages(StatsEngine.daily(readings.filter { $0.date >= since }, calendar: calendar))
         return WidgetSnapshot(systolic: last.systolic, diastolic: last.diastolic, pulse: last.pulse, date: last.date,
                               categoryRaw: last.category.rawValue, categoryTitle: last.category.title,

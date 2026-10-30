@@ -16,3 +16,10 @@ struct EntryInputTests {
         #expect(EntryInput.isComplete(text) == done)
     }
 }
+
+extension EntryInputTests {
+    @Test func nonASCIIDigitsAreDropped() {
+        #expect(EntryInput.sanitize("١٢٨") == "")  // Arabic-Indic 128: Int() can't read it
+        #expect(EntryInput.sanitize("1٢8") == "18")
+    }
+}

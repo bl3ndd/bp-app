@@ -17,6 +17,14 @@ final class PurchaseService {
 
     private var updatesTask: Task<Void, Never>?
 
+    static func message(for outcome: RestoreOutcome) -> String {
+        switch outcome {
+        case .restored: "Simply BP Pro is unlocked again."
+        case .nothingToRestore: "No earlier Pro purchase was found for this Apple Account."
+        case .failed: "Couldn't reach the App Store. Check your connection and try again."
+        }
+    }
+
     init() {
         // A purchase can also land from outside the app — Ask to Buy approval,
         // another device, a refund — so listen for the lifetime of the service.
@@ -80,18 +88,25 @@ final class PurchaseService {
 
     /// Apple requires an explicit restore path even though `currentEntitlement`
     /// usually resolves on its own.
+    enum RestoreOutcome { case restored, nothingToRestore, failed }
+
+    /// Reports the outcome so the UI can say it — a silent button reads as broken (2.1/3.1.1).
     @MainActor
-    func restore() async {
-        guard !isWorking else { return }
+    @discardableResult
+    func restore() async -> RestoreOutcome {
+        guard !isWorking else { return isPro ? .restored : .nothingToRestore }
         isWorking = true
         defer { isWorking = false }
-        try? await AppStore.sync()
+        var syncFailed = false
+        do { try await AppStore.sync() } catch { syncFailed = true }
         // Entitlements can take a moment to appear after a sync; give them a few seconds.
         for attempt in 0..<4 {
             await refreshEntitlement()
             if isPro || attempt == 3 { break }
             try? await Task.sleep(for: .seconds(1))
         }
+        if isPro { return .restored }
+        return syncFailed ? .failed : .nothingToRestore
     }
 
     /// Deliberately on the deprecated singular API: its replacement,

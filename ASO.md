@@ -31,7 +31,7 @@ Searchers phrase it as "blood pressure", rarely "BP" alone; apps from the top of
 - **Primary category:** Health & Fitness (not Medical). **Secondary:** Medical.
 - **Age rating:** answer honestly; medical/treatment information = "infrequent/mild" at most.
 
-Don't use: "AHA" / "American Heart Association" (trademark, 2.3.7 / 5.2.1), "measure" / "monitor" in name or subtitle (1.4.1: we don't measure), prices in name/subtitle/screenshots (2.3.7). "No subscription" is a pricing-model claim, so keep it in the description and promo text, and check how App Review treats it in screenshots.
+Don't use: "AHA" / "American Heart Association" in the name, subtitle or keywords (trademark, 2.3.7 / 5.2.1; citing the guideline in the description is fine), "measure" / "monitor" in name or subtitle (1.4.1: we don't measure), prices in name/subtitle/screenshots (2.3.7). "No subscription" is a pricing-model claim, so keep it in the description and promo text, and check how App Review treats it in screenshots.
 
 ## Promotional text (170)
 

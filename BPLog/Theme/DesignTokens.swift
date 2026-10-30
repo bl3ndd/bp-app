@@ -26,6 +26,9 @@ enum AppColors {
     static let separator = Color(light: 0xE6E0D3, dark: 0x34312B)
 
     static let accent = Color(light: 0x2F5FD0, dark: 0x7EA2F2)
+    /// Fill behind white text (buttons, selected chips): the icon blue in both
+    /// modes, since the lighter dark-mode accent drops white text below 3:1.
+    static let accentFill = Color(light: 0x2F5FD0, dark: 0x2F5FD0)
     static let accentTint = Color(light: 0xE5ECFB, dark: 0x26324D)
 
     static let systolic = Color(light: 0x2F5FD0, dark: 0x7EA2F2)
@@ -39,6 +42,8 @@ enum AppColors {
     static let stage1 = Color(light: 0xC2410C, dark: 0xFB923C)
     static let stage2 = Color(light: 0xB91C1C, dark: 0xF87171)
     static let crisis = Color(light: 0x7F1D1D, dark: 0xFCA5A5)
+    /// The crisis banner's fill under white text: dark red in both modes.
+    static let crisisFill = Color(light: 0x7F1D1D, dark: 0x991B1B)
 }
 
 extension BPCategory {

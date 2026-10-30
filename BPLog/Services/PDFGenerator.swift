@@ -24,7 +24,7 @@ enum PDFGenerator {
     private static let pageWidth: CGFloat = 612
     private static let pageHeight: CGFloat = 792
     private static let margin: CGFloat = 48
-    private static let footerHeight: CGFloat = 40
+    private static let footerHeight: CGFloat = 48
     private static var contentWidth: CGFloat { pageWidth - margin * 2 }
 
     private static let titleFont = UIFont.systemFont(ofSize: 22, weight: .bold)
@@ -35,7 +35,7 @@ enum PDFGenerator {
     private static let tableFont = UIFont.systemFont(ofSize: 9)
     private static let tableBold = UIFont.systemFont(ofSize: 9, weight: .semibold)
 
-    static let disclaimer = "Readings were taken by the patient with a home blood pressure monitor and recorded in Simply BP. Simply BP is not a medical device. Categories follow the 2017 ACC/AHA guideline; \"Low\" marks readings below 90/60."
+    static let disclaimer = "Talk to your doctor about these readings. Readings were taken by the patient with a home blood pressure monitor and recorded in Simply BP. Simply BP is not a medical device. Categories follow the 2017 ACC/AHA guideline; \"Low\" marks readings below 90/60."
 
     static func generate(readings: [ReportReading], interval: DateInterval?, patientName: String,
                          targetSystolic: Int = 130, targetDiastolic: Int = 80,
@@ -180,10 +180,13 @@ enum PDFGenerator {
                              r.value.category.title,
                              "\(r.arm.capitalized) / \(r.position.capitalized)",
                              notes]
-                let notesWidth = contentWidth * columns[6].1 - 4
-                let notesHeight = (notes as NSString).boundingRect(with: CGSize(width: notesWidth, height: .greatestFiniteMagnitude),
-                                                                   options: [.usesLineFragmentOrigin], attributes: [.font: tableFont], context: nil).height
-                let rowHeight = max(14, notesHeight + 3)
+                // Every cell may wrap ("Hypertensive crisis", "Right / Standing"): the tallest sets the row.
+                let cellHeights = cells.enumerated().map { c, cell in
+                    (cell as NSString).boundingRect(with: CGSize(width: contentWidth * columns[c].1 - 4, height: .greatestFiniteMagnitude),
+                                                    options: [.usesLineFragmentOrigin],
+                                                    attributes: [.font: c == 2 ? tableBold : tableFont], context: nil).height
+                }
+                let rowHeight = max(14, (cellHeights.max() ?? 0) + 3)
                 if ensure(rowHeight) { tableHeader() }
                 if i.isMultiple(of: 2) {
                     UIColor(white: 0.96, alpha: 1).setFill()

@@ -174,7 +174,7 @@ struct PrimaryButtonStyle: ButtonStyle {
                 .frame(maxWidth: .infinity, minHeight: 58)
                 .background(
                     Capsule()
-                        .fill(isEnabled ? AppColors.accent : AppColors.pulse.opacity(0.5))
+                        .fill(isEnabled ? AppColors.accentFill : AppColors.pulse.opacity(0.5))
                         .opacity(configuration.isPressed ? 0.8 : 1)
                 )
         }

@@ -271,10 +271,12 @@ private struct StatsContent: View {
                 title("Average by day of week")
                 Chart(order, id: \.self) { day in
                     if let avg = byDay[day] {
-                        BarMark(x: .value("Day", symbols[day - 1]), y: .value("Systolic", avg.systolic))
+                        BarMark(x: .value("Day", symbols[day - 1]), y: .value("mmHg", avg.systolic))
                             .foregroundStyle(AppColors.systolic)
-                        BarMark(x: .value("Day", symbols[day - 1]), y: .value("Diastolic", avg.diastolic))
+                            .position(by: .value("Type", "Systolic"))
+                        BarMark(x: .value("Day", symbols[day - 1]), y: .value("mmHg", avg.diastolic))
                             .foregroundStyle(AppColors.diastolic)
+                            .position(by: .value("Type", "Diastolic"))
                     }
                 }
                 .chartXScale(domain: order.map { symbols[$0 - 1] })

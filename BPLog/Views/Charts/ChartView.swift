@@ -40,11 +40,12 @@ struct ChartView: View {
     @State private var dailyAverage = true
 
     private struct Point: Identifiable {
+        /// Position in the list: two readings can share a timestamp.
+        var id = 0
         let date: Date
         let systolic: Double
         let diastolic: Double
         let pulse: Double?
-        var id: Date { date }
     }
 
     private var values: [ReadingValue] {
@@ -55,11 +56,14 @@ struct ChartView: View {
     }
 
     private var points: [Point] {
+        let raw: [Point]
         if dailyAverage {
-            return StatsEngine.dailyAverages(values, calendar: .current)
+            raw = StatsEngine.dailyAverages(values, calendar: .current)
                 .map { Point(date: $0.day, systolic: $0.averages.systolic, diastolic: $0.averages.diastolic, pulse: $0.averages.pulse) }
+        } else {
+            raw = values.map { Point(date: $0.date, systolic: Double($0.systolic), diastolic: Double($0.diastolic), pulse: $0.pulse.map(Double.init)) }
         }
-        return values.map { Point(date: $0.date, systolic: Double($0.systolic), diastolic: Double($0.diastolic), pulse: $0.pulse.map(Double.init)) }
+        return raw.enumerated().map { i, p in var p = p; p.id = i; return p }
     }
 
     var body: some View {
