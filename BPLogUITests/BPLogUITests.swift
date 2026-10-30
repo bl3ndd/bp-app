@@ -150,6 +150,19 @@ final class BPLogUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["No readings yet"].waitForExistence(timeout: 5))
     }
 
+    @MainActor
+    func testDeleteWithLongPress() {
+        launch(["-SKIP_ONBOARDING", "-FREE"])
+        addReading("124", "78")
+        tab("History")
+        let row = app.cells.containing(NSPredicate(format: "label CONTAINS %@", "124/78")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        row.press(forDuration: 1.2)
+        app.buttons["Delete"].firstMatch.tap()
+        app.buttons["Delete Reading"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["No readings yet"].waitForExistence(timeout: 5))
+    }
+
     // MARK: Pro gating
 
     @MainActor

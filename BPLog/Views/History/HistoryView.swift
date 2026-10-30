@@ -6,6 +6,7 @@ struct HistoryView: View {
     @Environment(AppSettings.self) private var settings
     @Query(sort: \Reading.date, order: .reverse) private var readings: [Reading]
     @State private var editing: Reading?
+    @State private var pendingDelete: Reading?
 
     private var days: [(day: Date, readings: [Reading])] {
         let calendar = Calendar.current
@@ -27,6 +28,11 @@ struct HistoryView: View {
                                 ForEach(day.readings) { r in
                                     Button { editing = r } label: { row(r) }
                                         .buttonStyle(.plain)
+                                        // Long press: swipe-to-delete isn't obvious to everyone.
+                                        .contextMenu {
+                                            Button("Edit", systemImage: "pencil") { editing = r }
+                                            Button("Delete", systemImage: "trash", role: .destructive) { pendingDelete = r }
+                                        }
                                 }
                                 .onDelete { offsets in delete(offsets.map { day.readings[$0] }) }
                             } header: {
@@ -40,6 +46,16 @@ struct HistoryView: View {
             .scrollContentBackground(.hidden)
             .background(AppColors.bgApp)
             .sheet(item: $editing) { AddReadingView(editing: $0) }
+            .confirmationDialog("Delete this reading?",
+                                isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
+                                titleVisibility: .visible) {
+                Button("Delete Reading", role: .destructive) {
+                    if let r = pendingDelete { delete([r]) }
+                    pendingDelete = nil
+                }
+            } message: {
+                Text("It will be removed from your history. This can't be undone.")
+            }
         }
     }
 
