@@ -1,8 +1,8 @@
 # BP Log — Privacy Policy (draft)
 
-Draft to host at the URL in `BPLog/Models/AppLinks.swift` and enter in App Store Connect (guideline 5.1.1(i)). Replace the contact address before publishing.
+Draft to host at the URL in `BPLog/Models/AppLinks.swift` and enter in App Store Connect (guideline 5.1.1(i)).
 
-_Last updated: [date]_
+_Last updated: October 30, 2026_
 
 **Short version: BP Log doesn't collect your data. Your readings stay on your devices and in Apple Health. We never see them.**
 
@@ -29,4 +29,4 @@ Delete individual readings in History, or delete the app to remove all data stor
 BP Log is not directed at children under 13.
 
 ## Contact
-[support email]
+woodoo2013@gmail.com

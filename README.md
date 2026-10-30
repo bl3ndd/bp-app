@@ -31,8 +31,7 @@ Covered: categories and input limits, every `StatsEngine` function including dai
 
 ## Before submission
 
-See `PLAN.md` › Task 11 compliance checklist. Placeholders to replace:
+See `PLAN.md` › Task 11 compliance checklist. Still to do:
 
-- `AppLinks.privacyPolicy` and `AppLinks.support` (`BPLog/Models/AppLinks.swift`)
 - Create the IAP `white.tea.BPLog.pro` ($14.99, non-consumable) in App Store Connect
-- Host `PRIVACY.md` and fill in the contact address
+- Privacy policy is live at https://bp-app-site.vercel.app/privacy.html (`site/`, deployed by Vercel on push)
