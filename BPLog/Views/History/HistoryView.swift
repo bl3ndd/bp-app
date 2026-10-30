@@ -31,7 +31,9 @@ struct HistoryView: View {
                                         // Long press: swipe-to-delete isn't obvious to everyone.
                                         .contextMenu {
                                             Button("Edit", systemImage: "pencil") { editing = r }
+                                            // Explicit red: the app-wide blue tint otherwise colors the destructive icon.
                                             Button("Delete", systemImage: "trash", role: .destructive) { pendingDelete = r }
+                                                .tint(.red)
                                         }
                                 }
                                 .onDelete { offsets in delete(offsets.map { day.readings[$0] }) }

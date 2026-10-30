@@ -4,15 +4,18 @@ import Foundation
 /// `-UITEST`: in-memory store and throwaway settings, so tests never touch real
 /// readings and each run starts clean. `-SKIP_ONBOARDING`: start on Home.
 /// `-DEMO`: like `-UITEST`, plus two months of sample readings and no onboarding,
-/// for trying statistics and the purchase flow on a device.
+/// for trying statistics and the purchase flow on a device. `-DEMO_LARGE`: the same
+/// with three years (~3,000 readings), for checking speed with a long history.
 /// Pro state comes from `PurchaseService`'s `-FREE` / `-SNAPSHOT`.
 enum LaunchMode {
     #if DEBUG
     static let isUITest = ProcessInfo.processInfo.arguments.contains("-UITEST")
-    static let isDemo = ProcessInfo.processInfo.arguments.contains("-DEMO")
+    static let isDemoLarge = ProcessInfo.processInfo.arguments.contains("-DEMO_LARGE")
+    static let isDemo = isDemoLarge || ProcessInfo.processInfo.arguments.contains("-DEMO")
     static let skipOnboarding = isDemo || ProcessInfo.processInfo.arguments.contains("-SKIP_ONBOARDING")
     #else
     static let isUITest = false
+    static let isDemoLarge = false
     static let isDemo = false
     static let skipOnboarding = false
     #endif
