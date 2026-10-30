@@ -50,7 +50,10 @@ struct BPCategoryTests {
         #expect(!ReadingLimits.isValid(systolic: 70, diastolic: 90, pulse: nil))
         #expect(!ReadingLimits.isValid(systolic: 300, diastolic: 80, pulse: nil))
         #expect(!ReadingLimits.isValid(systolic: 120, diastolic: 20, pulse: nil))
-        #expect(!ReadingLimits.isValid(systolic: 120, diastolic: 80, pulse: 250))
+        #expect(!ReadingLimits.isValid(systolic: 120, diastolic: 80, pulse: 251))
+        #expect(!ReadingLimits.isValid(systolic: 120, diastolic: 80, pulse: 14))
+        #expect(ReadingLimits.isValid(systolic: 120, diastolic: 80, pulse: 15))
+        #expect(ReadingLimits.isValid(systolic: 120, diastolic: 80, pulse: 250))
     }
 
     @Test func problemNamesTheActualCause() {

@@ -29,7 +29,7 @@ Gating goes through one predicate, `ProFeature.isLocked(_:isPro:)`. The paywall 
 | Hypertensive crisis | > 180 | and/or | > 120 |
 | Low (not an AHA category) | < 90 | or | < 60, only when nothing is high |
 
-Input limits (`ReadingLimits`): SYS 60–260, DIA 30–160, pulse 30–220, SYS > DIA. Each error has its own message.
+Input limits (`ReadingLimits`): SYS 60–260, DIA 30–160, pulse 15–250, SYS > DIA. Each error has its own message.
 
 ## Several readings a day
 

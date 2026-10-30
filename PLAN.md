@@ -89,7 +89,7 @@ Files:
 [x] `@Model final class Reading` with the fields listed in Context; all properties defaulted; `enum Arm { left, right }`, `enum Position { sitting, standing, lying }`, `enum Source { manual, health }` stored as raw strings
 [x] `struct ReadingValue` (date, systolic, diastolic, pulse): a plain value snapshot that `StatsEngine` and `PDFGenerator` take, so they are testable without SwiftData
 [x] `enum BPCategory { normal, elevated, stage1, stage2, crisis }` + `static func classify(systolic:diastolic:)` per the AHA 2017 table (normal <120 and <80; elevated 120–129 and <80; stage 1 130–139 or 80–89; stage 2 ≥140 or ≥90; crisis >180 and/or >120), the higher category wins; `color`, `title`
-[x] Input validation range: SYS 60–260, DIA 30–160, pulse 30–220, SYS > DIA
+[x] Input validation range: SYS 60–260, DIA 30–160, pulse 15–250, SYS > DIA
 [x] `@Observable final class AppSettings` over UserDefaults: `hasCompletedOnboarding`, `healthEnabled`, `reminderTimes: [DateComponents]`
 [x] Write tests for this task (every category boundary, "higher wins" cases like 125/85 → stage 1, crisis, validation rejects SYS ≤ DIA and out-of-range values)
 [x] run project test suite — must pass before Task 3

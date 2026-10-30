@@ -65,7 +65,7 @@ nonisolated enum BPCategory: Int, CaseIterable, Comparable, Sendable {
 nonisolated enum ReadingLimits {
     static let systolic = 60...260
     static let diastolic = 30...160
-    static let pulse = 30...220
+    static let pulse = 15...250
 
     static func isValid(systolic: Int, diastolic: Int, pulse: Int?) -> Bool {
         problem(systolic: systolic, diastolic: diastolic, pulse: pulse) == nil
