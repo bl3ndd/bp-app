@@ -71,7 +71,7 @@ Simply BP is not a medical device and does not measure blood pressure. Always ta
 
 ## App Privacy answers (App Store Connect)
 
-With TelemetryDeck the answer is no longer "Data Not Collected". Declare: **Usage Data › Product Interaction** and **Diagnostics › Other Diagnostic Data**, both *Not linked to the user*, *Not used for tracking*, purpose *Analytics*. Check TelemetryDeck's own App Store privacy guide before submitting. Health & Fitness data: **not collected** (it never leaves the device).
+With TelemetryDeck the answer is no longer "Data Not Collected". Declare: **Usage Data › Product Interaction**, *Not linked to the user*, *Not used for tracking*, purpose *Analytics* — the same as `BPLog/PrivacyInfo.xcprivacy` and Mezame's accepted setup. Check TelemetryDeck's own App Store privacy guide before submitting. Health & Fitness data: **not collected** (it never leaves the device).
 
 ## Notes for Review (2.3.1(a))
 
