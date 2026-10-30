@@ -17,9 +17,16 @@ struct PurchaseServiceTests {
         return session
     }
 
+    /// The test store's settings persist on the device: put dialogs back on, or a
+    /// later manual run from Xcode buys silently without the purchase sheet.
+    private func reset(_ session: SKTestSession) {
+        session.clearTransactions()
+        session.disableDialogs = false
+    }
+
     @Test func productLoadsWithItsPrice() async throws {
         let session = try session()
-        defer { session.clearTransactions() }
+        defer { reset(session) }
         let purchases = PurchaseService()
         await purchases.load()
         let product = try #require(purchases.product)
@@ -30,7 +37,7 @@ struct PurchaseServiceTests {
 
     @Test func buyingUnlocksPro() async throws {
         let session = try session()
-        defer { session.clearTransactions() }
+        defer { reset(session) }
         let purchases = PurchaseService()
         await purchases.load()
         #expect(!purchases.isPro)
@@ -51,7 +58,7 @@ struct PurchaseServiceTests {
 
     @Test func refundRemovesPro() async throws {
         let session = try session()
-        defer { session.clearTransactions() }
+        defer { reset(session) }
         let purchases = PurchaseService()
         await purchases.load()
         #expect(try await purchases.purchase())
