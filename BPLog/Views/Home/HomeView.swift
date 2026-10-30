@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(AppSettings.self) private var settings
     @Query(sort: \Reading.date, order: .reverse) private var readings: [Reading]
     @State private var showingAdd = false
     @State private var showingReport = false
@@ -51,7 +52,17 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showingReport) { ReportView() }
+            // Widget "add" link: on a cold launch the flag is already set when Home appears.
+            .onAppear(perform: openPendingAdd)
+            .onChange(of: settings.pendingAddReading) { openPendingAdd() }
         }
+    }
+
+    private func openPendingAdd() {
+        guard settings.pendingAddReading else { return }
+        settings.pendingAddReading = false
+        showingReport = false
+        showingAdd = true
     }
 
     private func latestCard(_ r: Reading) -> some View {

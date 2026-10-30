@@ -17,6 +17,8 @@ final class AppSettings {
             Analytics.setEnabled(analyticsEnabled)
         }
     }
+    /// Set by a widget's "add" link; Home opens the entry form and clears it. Not persisted.
+    var pendingAddReading = false
     /// Reminder times as minutes since midnight (480 = 08:00).
     var reminderMinutes: [Int] { didSet { defaults.set(reminderMinutes, forKey: Keys.reminders) } }
     /// "In range" means below both targets. 130/80 is the AHA treatment goal for most adults.

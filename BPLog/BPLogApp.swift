@@ -35,6 +35,9 @@ struct BPLogApp: App {
                 .environment(settings)
                 .environment(purchases)
                 .tint(AppColors.accent)
+                .onOpenURL { url in
+                    if WidgetBridge.isAddLink(url) { settings.pendingAddReading = true }
+                }
                 .onChange(of: scenePhase) { _, phase in
                     // Picks up readings a smart cuff wrote to Health while we were away.
                     guard phase == .active, settings.healthEnabled else { return }

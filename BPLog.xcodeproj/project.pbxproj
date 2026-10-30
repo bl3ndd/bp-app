@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AD0000000000000000000001 /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = AD0000000000000000000002 /* TelemetryDeck */; };
+		BC0000000000000000000001 /* BPLogWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = BC0000000000000000000002 /* BPLogWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,17 +26,59 @@
 			remoteGlobalIDString = 8DE41D233094B4BB00D1BFD2;
 			remoteInfo = BPLog;
 		};
+		BC0000000000000000000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8DE41D1C3094B4BB00D1BFD2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BC0000000000000000000010;
+			remoteInfo = BPLogWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BC0000000000000000000004 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BC0000000000000000000001 /* BPLogWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8DE41D243094B4BB00D1BFD2 /* BPLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BPLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DE41D313094B4BD00D1BFD2 /* BPLogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BPLogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DE41D3B3094B4BD00D1BFD2 /* BPLogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BPLogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC0000000000000000000002 /* BPLogWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BPLogWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		BC0000000000000000000006 /* Exceptions for "BPLog" folder in "BPLog" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8DE41D233094B4BB00D1BFD2 /* BPLog */;
+		};
+		BC0000000000000000000005 /* Exceptions for "BPLogWidget" folder in "BPLogWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BC0000000000000000000010 /* BPLogWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8DE41D263094B4BB00D1BFD2 /* BPLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BC0000000000000000000006 /* Exceptions for "BPLog" folder in "BPLog" target */,
+			);
 			path = BPLog;
 			sourceTree = "<group>";
 		};
@@ -47,6 +90,14 @@
 		8DE41D3E3094B4BD00D1BFD2 /* BPLogUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = BPLogUITests;
+			sourceTree = "<group>";
+		};
+		BC0000000000000000000007 /* BPLogWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BC0000000000000000000005 /* Exceptions for "BPLogWidget" folder in "BPLogWidgetExtension" target */,
+			);
+			path = BPLogWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -68,6 +119,13 @@
 			files = (
 			);
 		};
+		BC0000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -77,6 +135,7 @@
 				8DE41D263094B4BB00D1BFD2 /* BPLog */,
 				8DE41D343094B4BD00D1BFD2 /* BPLogTests */,
 				8DE41D3E3094B4BD00D1BFD2 /* BPLogUITests */,
+				BC0000000000000000000007 /* BPLogWidget */,
 				8DE41D253094B4BB00D1BFD2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,6 +146,7 @@
 				8DE41D243094B4BB00D1BFD2 /* BPLog.app */,
 				8DE41D313094B4BD00D1BFD2 /* BPLogTests.xctest */,
 				8DE41D3B3094B4BD00D1BFD2 /* BPLogUITests.xctest */,
+				BC0000000000000000000002 /* BPLogWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -101,8 +161,12 @@
 				8DE41D203094B4BB00D1BFD2 /* Sources */,
 				8DE41D213094B4BB00D1BFD2 /* Frameworks */,
 				8DE41D223094B4BB00D1BFD2 /* Resources */,
+				BC0000000000000000000004 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				BC0000000000000000000015 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				8DE41D263094B4BB00D1BFD2 /* BPLog */,
@@ -157,6 +221,28 @@
 			productReference = 8DE41D3B3094B4BD00D1BFD2 /* BPLogUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		BC0000000000000000000010 /* BPLogWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BC0000000000000000000014 /* Build configuration list for PBXNativeTarget "BPLogWidgetExtension" */;
+			buildPhases = (
+				BC0000000000000000000011 /* Sources */,
+				BC0000000000000000000012 /* Frameworks */,
+				BC0000000000000000000013 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BC0000000000000000000007 /* BPLogWidget */,
+			);
+			name = BPLogWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = BPLogWidgetExtension;
+			productReference = BC0000000000000000000002 /* BPLogWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -167,6 +253,9 @@
 				LastSwiftUpdateCheck = 2710;
 				LastUpgradeCheck = 2710;
 				TargetAttributes = {
+					BC0000000000000000000010 = {
+						CreatedOnToolsVersion = 27.1;
+					};
 					8DE41D233094B4BB00D1BFD2 = {
 						CreatedOnToolsVersion = 27.1;
 					};
@@ -200,6 +289,7 @@
 				8DE41D233094B4BB00D1BFD2 /* BPLog */,
 				8DE41D303094B4BD00D1BFD2 /* BPLogTests */,
 				8DE41D3A3094B4BD00D1BFD2 /* BPLogUITests */,
+				BC0000000000000000000010 /* BPLogWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -220,6 +310,13 @@
 			files = (
 			);
 		};
+		BC0000000000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -238,6 +335,13 @@
 			files = (
 			);
 		};
+		BC0000000000000000000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -250,6 +354,11 @@
 			isa = PBXTargetDependency;
 			target = 8DE41D233094B4BB00D1BFD2 /* BPLog */;
 			targetProxy = 8DE41D3C3094B4BD00D1BFD2 /* PBXContainerItemProxy */;
+		};
+		BC0000000000000000000015 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BC0000000000000000000010 /* BPLogWidgetExtension */;
+			targetProxy = BC0000000000000000000003 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -387,6 +496,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
+				INFOPLIST_FILE = BPLog/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Simply BP reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Simply BP saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
@@ -424,6 +534,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
+				INFOPLIST_FILE = BPLog/Info.plist;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Simply BP reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Simply BP saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
@@ -533,6 +644,62 @@
 			};
 			name = Release;
 		};
+		BC0000000000000000000016 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = BPLogWidget/BPLogWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89ST3SFXS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BPLogWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = white.tea.BPLog.BPLogWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BC0000000000000000000017 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = BPLogWidget/BPLogWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A89ST3SFXS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BPLogWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = white.tea.BPLog.BPLogWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -566,6 +733,15 @@
 				8DE41D4A3094B4BD00D1BFD2 /* Debug configuration for PBXNativeTarget "BPLogUITests" */,
 				8DE41D4B3094B4BD00D1BFD2 /* Release configuration for PBXNativeTarget "BPLogUITests" */,
 			);
+			defaultConfigurationName = Release;
+		};
+		BC0000000000000000000014 /* Build configuration list for PBXNativeTarget "BPLogWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC0000000000000000000016 /* Debug */,
+				BC0000000000000000000017 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
