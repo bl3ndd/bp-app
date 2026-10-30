@@ -1,0 +1,77 @@
+# App Store metadata (US, en-US)
+
+Built from the niche research in `~/Documents/projects/aso-keywords` (Oct 2026, Apple Ads popularity 5–100 + iTunes top-10 checks).
+
+## Why this name
+
+With near-zero ratings, our apps rank high only for the exact phrase in their title: Mezame is #1 for "cbt thought journal" (its title) and #4 for "cbt journal", and uDoctor sits at #2 for `blood pressure log` with 4 ratings. So the title carries the exact top phrase.
+
+| Keyword | Popularity | Top-5 median ratings | Note |
+|---|---|---|---|
+| blood pressure | 56 | 32.8k | the head term; bonus if we grow |
+| blood pressure log | 53 | 8.8k | **primary target**, newcomers rank top-5 |
+| blood pressure monitor | 51 | 5k | top-1 is a fake "finger" app; intent partly "measure with phone" |
+| blood pressure tracker | 24 | 8.8k | |
+| bp log | 23 | 8.8k | |
+| pill / medication reminder | 49 / 39 | 9.9k | not a v1 feature, don't target (2.3.7) |
+
+Searchers phrase it as "blood pressure", rarely "BP" alone; apps from the top of Apple's suggestions are "… free" variants.
+
+## Metadata
+
+- **Name (30/30):** `Blood Pressure Log: BP Tracker`
+- **Subtitle (29/30):** `Diary, Charts & Doctor Report`
+- **Keywords (100/100), no repeats of name/subtitle words:**
+  `pulse,heart,rate,hypertension,health,journal,record,systolic,diastolic,reading,cuff,high,low,average`
+- **Primary category:** Health & Fitness (not Medical). **Secondary:** Medical.
+- **Age rating:** answer honestly; medical/treatment information = "infrequent/mild" at most.
+
+Don't use: "AHA" / "American Heart Association" (trademark, 2.3.7 / 5.2.1), "measure" / "monitor" in name or subtitle (1.4.1: we don't measure), prices in name/subtitle/screenshots (2.3.7). "No subscription" is a pricing-model claim, so keep it in the description and promo text, and check how App Review treats it in screenshots.
+
+## Promotional text (170)
+
+Log your blood pressure in seconds, see daily averages and trends, and bring a clean report to your doctor. One-time Pro unlock — no subscription, no ads.
+
+## Description
+
+Keep a simple, reliable record of your blood pressure — and know what your numbers are doing.
+
+BP Log is a blood pressure diary for the readings you take with your own home monitor. Add a reading in seconds, see it colored by the standard blood pressure categories, and watch your daily averages and trends over time.
+
+WHAT YOU GET FREE
+• Fast entry: top number, bottom number and pulse, with arm, position, tags and notes
+• Categories from the 2017 ACC/AHA guideline, plus a "Low" flag below 90/60
+• History with daily averages when you take several readings a day
+• 7- and 30-day charts
+• Apple Health: readings you add are saved to Health, and readings from a smart monitor show up here automatically. Apple Health keeps your history in sync across your devices.
+• Morning and evening reminders
+• Backup to a file you keep, and restore any time
+
+BP LOG PRO — ONE-TIME PURCHASE
+• Doctor-ready PDF report: summary, chart and every reading, on US Letter paper
+• Full statistics: trend per week, morning vs. evening, days in your target range, by day of week, pulse pressure and more
+• Charts for 90 days, a year, or all time
+
+No subscription. No ads. No account. Your readings stay on your devices and in Apple Health — we never see them.
+
+BP Log is not a medical device and does not measure blood pressure. Always talk to your doctor before making medical decisions.
+
+## Screenshot captions (draft, design pass later)
+
+1. Your blood pressure, logged in seconds
+2. Daily averages, even with several readings a day
+3. See your trend at a glance
+4. A report your doctor can read
+5. Syncs with Apple Health
+6. One-time unlock. No subscription. No ads.
+
+## Notes for Review (2.3.1(a))
+
+BP Log is a blood pressure diary. It does not measure blood pressure with device sensors; users type readings from their own home monitor.
+
+How to review: complete the 3-step onboarding (Apple Health and reminders can be skipped). On Home tap "Add Reading", enter e.g. 128 / 82 / 70 and Save. Add a few more readings to see History, Charts and Stats populate.
+
+- HealthKit: reads and writes blood pressure (systolic/diastolic correlation) and heart rate, only after the user turns on Settings › Apple Health. Samples we write are marked HKMetadataKeyWasUserEntered. Health data is never sent anywhere: the app has no network calls, analytics or ads.
+- Storage: local SwiftData store only. No iCloud/CloudKit (5.1.3(ii)). The JSON backup is created only when the user taps "Back Up Readings" and is saved wherever the user chooses with the system file picker.
+- In-App Purchase: one non-consumable, "BP Log Pro" (`white.tea.BPLog.pro`), $14.99. It unlocks the doctor PDF report (Home or Stats › Doctor Report), full statistics (Stats tab), and 90D/1Y/All chart ranges. Restore Purchases is in the paywall and in Settings. Pro features don't require HealthKit access.
+- Medical: categories follow the 2017 ACC/AHA guideline; "Low" (below 90/60) is a separate, commonly used threshold. The app reminds users to consult a doctor in onboarding, in Settings › About and on every report page; crisis-range readings show a banner pointing to their doctor or 911 / local emergency number. No diagnosis or treatment advice.

@@ -1,0 +1,38 @@
+{
+  "identifier" : "B9P1L0G1",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "14.99",
+      "familyShareable" : false,
+      "internalID" : "6800000001",
+      "localizations" : [
+        {
+          "description" : "Doctor PDF report, full statistics and all-time charts",
+          "displayName" : "BP Log Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "white.tea.BPLog.pro",
+      "referenceName" : "BP Log Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
