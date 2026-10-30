@@ -20,12 +20,15 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 14) {
+                    Text(Date().formatted(.dateTime.weekday(.wide).month(.wide).day()))
+                        .font(.headline)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     if let last = readings.first {
                         if last.category == .crisis { CrisisBanner() }
                         latestCard(last)
-                        todayCard
-                        weekCard
+                        averages
                     } else {
                         emptyCard
                     }
@@ -67,9 +70,17 @@ struct HomeView: View {
 
     private func latestCard(_ r: Reading) -> some View {
         CardView {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline) {
                     Text("Latest reading").font(.headline).foregroundStyle(AppColors.textSecondary)
+                    Spacer()
+                    Text(r.date.formatted(date: .abbreviated, time: .shortened))
+                        .font(.subheadline)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+                ReadingNumbers(systolic: r.systolic, diastolic: r.diastolic, pulse: r.pulse, size: 64)
+                HStack {
+                    CategoryBadge(category: r.category)
                     Spacer()
                     if r.source == .health {
                         Label("Apple Health", systemImage: "heart.text.square")
@@ -77,54 +88,52 @@ struct HomeView: View {
                             .foregroundStyle(AppColors.textSecondary)
                     }
                 }
-                ReadingNumbers(systolic: r.systolic, diastolic: r.diastolic, pulse: r.pulse)
-                HStack {
-                    CategoryBadge(category: r.category)
-                    Spacer()
-                    Text(r.date.formatted(date: .abbreviated, time: .shortened))
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
+                CategoryScale(category: r.category)
                 CategoryNote(category: r.category)
             }
         }
     }
 
-    /// Only once there's more than one reading today — with one, it would just repeat the latest card.
+    /// Today's average shows once there's more than one reading today — with one
+    /// it would repeat the latest card. The 7-day average is a mean of daily
+    /// averages, so a day with many readings counts once. Side by side when they
+    /// fit, stacked at large text sizes.
     @ViewBuilder
-    private var todayCard: some View {
+    private var averages: some View {
         let today = self.today
-        if today.count > 1, let avg = StatsEngine.averages(today) {
-            averageCard("Today's average", avg, footnote: "\(today.count) readings today")
-        }
-    }
-
-    /// Mean of daily averages, so a day with many readings counts once.
-    @ViewBuilder
-    private var weekCard: some View {
         let week = lastWeek
         let days = StatsEngine.daily(week, calendar: .current)
-        if let avg = StatsEngine.averages(days) {
-            averageCard("Your 7-day average", avg,
-                        footnote: "\(week.count == 1 ? "1 reading" : "\(week.count) readings"), \(days.count == 1 ? "1 day" : "\(days.count) days")")
+        let todayCard = today.count > 1
+            ? StatsEngine.averages(today).map { averageCard("Today", $0, footnote: "\(today.count) readings") }
+            : nil
+        let weekCard = StatsEngine.averages(days).map {
+            averageCard("Last 7 days", $0, footnote: "\(week.count == 1 ? "1 reading" : "\(week.count) readings"), \(days.count == 1 ? "1 day" : "\(days.count) days")")
+        }
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .top, spacing: 12) { todayCard; weekCard }
+            VStack(spacing: 12) { todayCard; weekCard }
         }
     }
 
     private func averageCard(_ title: String, _ avg: StatsEngine.Averages, footnote: String) -> some View {
         let sys = Int(avg.systolic.rounded())
         let dia = Int(avg.diastolic.rounded())
+        let category = BPCategory.classify(systolic: sys, diastolic: dia)
         return CardView {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(title).font(.headline).foregroundStyle(AppColors.textSecondary)
-                ReadingNumbers(systolic: sys, diastolic: dia, pulse: avg.pulse.map { Int($0.rounded()) }, size: 40)
-                HStack {
-                    CategoryBadge(category: .classify(systolic: sys, diastolic: dia))
-                    Spacer()
-                    Text(footnote)
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.textSecondary)
+                Text("\(sys)/\(dia)")
+                    .font(AppFont.number(34))
+                    .foregroundStyle(AppColors.textPrimary)
+                    .lineLimit(1)
+                    .fixedSize()
+                HStack(spacing: 6) {
+                    Circle().fill(category.color).frame(width: 8, height: 8)
+                    Text(category.shortTitle).font(.subheadline.weight(.semibold)).foregroundStyle(category.color)
                 }
+                Text(footnote).font(.subheadline).foregroundStyle(AppColors.textSecondary)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -158,7 +167,7 @@ struct CrisisBanner: View {
         .foregroundStyle(.white)
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 16).fill(AppColors.crisis))
+        .background(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous).fill(AppColors.crisis))
         .accessibilityElement(children: .combine)
     }
 }

@@ -15,10 +15,12 @@ struct PaywallView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     VStack(spacing: 10) {
-                        Image(systemName: "heart.text.square.fill")
-                            .font(.system(size: 56))
-                            .foregroundStyle(AppColors.accent)
-                            .padding(.top, 12)
+                        Image("Logo")
+                            .resizable()
+                            .frame(width: 96, height: 96)
+                            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                            .padding(.top, 8)
+                            .accessibilityHidden(true)
                         Text("Simply BP Pro")
                             .font(.largeTitle.bold())
                             .foregroundStyle(AppColors.textPrimary)
@@ -28,16 +30,17 @@ struct PaywallView: View {
                     }
 
                     CardView {
-                        VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 18) {
                             benefit("doc.richtext", "Doctor-ready PDF report", "Averages, a chart and every reading, ready to print or email before your appointment.")
                             benefit("chart.bar.xaxis", "Full statistics", "Morning vs. evening, trends, time in your target range, and more.")
                             benefit("chart.xyaxis.line", "All-time charts", "See 90 days, a year, or your whole history.")
                         }
                     }
 
-                    Label("No subscription. No ads.", systemImage: "checkmark.seal.fill")
-                        .font(.headline)
-                        .foregroundStyle(AppColors.normal)
+                    HStack(spacing: 10) {
+                        chip("No subscription")
+                        chip("No ads")
+                    }
 
                     VStack(spacing: 10) {
                         buyButton
@@ -102,12 +105,22 @@ struct PaywallView: View {
         .disabled(purchases.isWorking || !(purchases.loaded || purchases.product != nil))
     }
 
+    private func chip(_ text: String) -> some View {
+        Label(text, systemImage: "checkmark.circle.fill")
+            .font(.headline)
+            .foregroundStyle(AppColors.normal)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Capsule().fill(AppColors.normal.opacity(0.12)))
+    }
+
     private func benefit(_ icon: String, _ title: String, _ text: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(AppColors.accent)
-                .frame(width: 32)
+                .frame(width: 44, height: 44)
+                .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(AppColors.accentTint))
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.headline).foregroundStyle(AppColors.textPrimary)
                 Text(text).font(.subheadline).foregroundStyle(AppColors.textSecondary)

@@ -111,6 +111,8 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .scrollContentBackground(.hidden)
+            .background(AppColors.bgApp)
             .fileExporter(
                 isPresented: Binding(get: { backup != nil }, set: { if !$0 { backup = nil } }),
                 document: backup,

@@ -18,10 +18,7 @@ struct StatsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    Picker("Period", selection: $range) {
-                        ForEach(ChartRange.allCases) { Text($0.rawValue).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
+                    SegmentedChips(options: ChartRange.allCases, selection: $range) { $0.rawValue }
 
                     if readings.isEmpty {
                         ContentUnavailableView("No readings yet", systemImage: "chart.bar.xaxis",
@@ -185,27 +182,36 @@ private struct StatsContent: View {
         }
     }
 
+    /// One column per category present, its height the number of days, count on top and share below.
     private func categoryCard(_ days: [ReadingValue]) -> some View {
         let distribution = StatsEngine.categoryDistribution(days)
         let total = Double(days.count)
         let present = BPCategory.allCases.filter { distribution[$0] != nil }
+        let most = Double(distribution.values.max() ?? 1)
         return CardView {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 14) {
                 title("Days by category")
-                Chart(present, id: \.self) { c in
-                    BarMark(x: .value("Share", Double(distribution[c] ?? 0) / total), stacking: .normalized)
-                        .foregroundStyle(c.color)
-                }
-                .chartXAxis(.hidden)
-                .frame(height: 28)
-                ForEach(present, id: \.self) { c in
-                    HStack {
-                        Circle().fill(c.color).frame(width: 12, height: 12)
-                        Text(c.title).font(.body).foregroundStyle(AppColors.textPrimary)
-                        Spacer()
-                        Text("\(Int((Double(distribution[c] ?? 0) / total * 100).rounded()))%")
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(AppColors.textPrimary)
+                HStack(alignment: .bottom, spacing: 10) {
+                    ForEach(present, id: \.self) { c in
+                        let count = distribution[c] ?? 0
+                        VStack(spacing: 6) {
+                            Text("\(count)")
+                                .font(AppFont.number(20))
+                                .foregroundStyle(AppColors.textPrimary)
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(c.color)
+                                .frame(height: max(8, 120 * Double(count) / most))
+                            Text(c.shortTitle)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(AppColors.textPrimary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                            Text("\(Int((Double(count) / total * 100).rounded()))%")
+                                .font(.subheadline)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .accessibilityElement(children: .combine)
                     }
                 }
             }

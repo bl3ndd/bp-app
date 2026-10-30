@@ -66,10 +66,7 @@ struct ChartView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    Picker("Range", selection: $range) {
-                        ForEach(ChartRange.allCases) { Text($0.rawValue).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
+                    SegmentedChips(options: ChartRange.allCases, selection: $range) { $0.rawValue }
                     .onChange(of: range) { old, new in
                         // A locked range snaps back and opens the paywall instead.
                         if let feature = new.feature, ProFeature.isLocked(feature, isPro: purchases.isPro) {

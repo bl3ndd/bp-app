@@ -37,6 +37,8 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("History")
+            .scrollContentBackground(.hidden)
+            .background(AppColors.bgApp)
             .sheet(item: $editing) { AddReadingView(editing: $0) }
         }
     }

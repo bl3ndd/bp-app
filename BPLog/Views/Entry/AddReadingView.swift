@@ -53,69 +53,71 @@ struct AddReadingView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    HStack(spacing: 12) {
-                        numberField("Systolic", hint: "Top", text: $systolic, field: .systolic, next: .diastolic)
-                        Text("/").font(AppFont.number(34)).foregroundStyle(AppColors.textSecondary)
-                        numberField("Diastolic", hint: "Bottom", text: $diastolic, field: .diastolic, next: .pulse)
-                        numberField("Pulse", hint: "Optional", text: $pulse, field: .pulse, next: nil)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    VStack(spacing: 10) {
+                        valueRow("Top number", sub: "Systolic", text: $systolic, field: .systolic, next: .diastolic)
+                        valueRow("Bottom number", sub: "Diastolic", text: $diastolic, field: .diastolic, next: .pulse)
+                        valueRow("Pulse", sub: "Optional", unit: "bpm", text: $pulse, field: .pulse, next: nil)
                     }
                     .disabled(isImported)
+                    if isImported {
+                        caption("From Apple Health. Edit the numbers in the app that recorded them.")
+                    }
                     if let sys, let dia, isValid {
-                        let category = BPCategory.classify(systolic: sys, diastolic: dia)
-                        CategoryBadge(category: category)
-                        CategoryNote(category: category)
+                        resultCard(.classify(systolic: sys, diastolic: dia))
                     } else if let shownProblem {
                         Text(shownProblem)
-                            .font(.subheadline)
+                            .font(.body.weight(.semibold))
                             .foregroundStyle(AppColors.stage2)
                     }
-                } footer: {
-                    if isImported {
-                        Text("From Apple Health. Edit the numbers in the app that recorded them.")
-                    }
-                }
 
-                Section("When and how") {
-                    DatePicker("Date & time", selection: $date, in: ...Date())
-                        .disabled(isImported)
-                    Picker("Arm", selection: $arm) {
-                        ForEach(Arm.allCases, id: \.self) { Text($0.rawValue.capitalized) }
-                    }
-                    .pickerStyle(.segmented)
-                    Picker("Position", selection: $position) {
-                        ForEach(Position.allCases, id: \.self) { Text($0.rawValue.capitalized) }
-                    }
-                    .pickerStyle(.segmented)
-                }
-
-                Section("Tags") {
-                    FlowLayout(spacing: 8) {
-                        ForEach(Self.tagOptions, id: \.self) { tag in
-                            let on = tags.contains(tag)
-                            Button {
-                                if on { tags.remove(tag) } else { tags.insert(tag) }
-                            } label: {
-                                Text(tag)
-                                    .font(.body.weight(.medium))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .foregroundStyle(on ? .white : AppColors.textPrimary)
-                                    .background(Capsule().fill(on ? AppColors.accent : AppColors.bgInput))
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityAddTraits(on ? .isSelected : [])
+                    sectionTitle("When and how")
+                    CardView {
+                        VStack(alignment: .leading, spacing: 14) {
+                            DatePicker("Date & time", selection: $date, in: ...Date())
+                                .font(.body.weight(.medium))
+                                .disabled(isImported)
+                            Divider()
+                            Text("Arm").font(.body.weight(.medium)).foregroundStyle(AppColors.textPrimary)
+                            SegmentedChips(options: Arm.allCases, selection: $arm) { $0.rawValue.capitalized }
+                            Text("Position").font(.body.weight(.medium)).foregroundStyle(AppColors.textPrimary)
+                            SegmentedChips(options: Position.allCases, selection: $position) { $0.rawValue.capitalized }
                         }
                     }
-                    .padding(.vertical, 4)
-                }
 
-                Section("Note") {
-                    TextField("Anything worth remembering", text: $note, axis: .vertical)
-                        .focused($focus, equals: .note)
+                    sectionTitle("Tags")
+                    CardView {
+                        FlowLayout(spacing: 8) {
+                            ForEach(Self.tagOptions, id: \.self) { tag in
+                                let on = tags.contains(tag)
+                                Button {
+                                    if on { tags.remove(tag) } else { tags.insert(tag) }
+                                } label: {
+                                    Text(tag)
+                                        .font(.body.weight(.medium))
+                                        .padding(.horizontal, 14)
+                                        .padding(.vertical, 9)
+                                        .foregroundStyle(on ? .white : AppColors.textPrimary)
+                                        .background(Capsule().fill(on ? AppColors.accent : AppColors.bgInput))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityAddTraits(on ? .isSelected : [])
+                            }
+                        }
+                    }
+
+                    sectionTitle("Note")
+                    CardView {
+                        TextField("Anything worth remembering", text: $note, axis: .vertical)
+                            .font(.body)
+                            .focused($focus, equals: .note)
+                    }
                 }
+                .padding()
             }
+            .scrollDismissesKeyboard(.interactively)
+            .background(AppColors.bgApp)
             .navigationTitle(editing == nil ? "Add Reading" : "Edit Reading")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -127,32 +129,82 @@ struct AddReadingView: View {
                 Button("Save Reading", action: save)
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(!isValid)
-                    .padding()
-                    .background(.bar)
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
+                    .background(AppColors.bgApp)
             }
             .sensoryFeedback(.success, trigger: saved)
             .onAppear(perform: load)
         }
     }
 
-    private func numberField(_ title: String, hint: String, text: Binding<String>, field: Field, next: Field?) -> some View {
-        VStack(spacing: 4) {
+    /// Full-width row: what to type on the left, a big number on the right.
+    /// Easier than narrow side-by-side fields at large text sizes.
+    private func valueRow(_ title: String, sub: String, unit: String? = nil, text: Binding<String>, field: Field, next: Field?) -> some View {
+        let focused = focus == field
+        return HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.title3.weight(.semibold)).foregroundStyle(AppColors.textPrimary)
+                Text(sub).font(.subheadline).foregroundStyle(AppColors.textSecondary)
+            }
+            Spacer(minLength: 8)
             TextField("—", text: text)
                 .keyboardType(.numberPad)
-                .multilineTextAlignment(.center)
-                .font(AppFont.number(field == .pulse ? 28 : 40))
+                .multilineTextAlignment(.trailing)
+                .font(AppFont.number(field == .pulse ? 40 : 52))
+                .foregroundStyle(AppColors.textPrimary)
                 .focused($focus, equals: field)
-                .padding(.vertical, 8)
-                .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.bgInput))
+                .frame(maxWidth: 170)
                 .onChange(of: text.wrappedValue) { _, new in
                     let clean = EntryInput.sanitize(new)
                     if clean != new { text.wrappedValue = clean }
-                    if EntryInput.isComplete(clean), focus == field { focus = next }
+                    // Move on after this keystroke is fully handled: switching focus inside it
+                    // delivered the same key to the next field too ("80" left a "0" in Pulse).
+                    if EntryInput.isComplete(clean), focus == field {
+                        Task { @MainActor in focus = next }
+                    }
                 }
-                .accessibilityLabel(title)
-            Text(title).font(.subheadline.weight(.semibold)).foregroundStyle(AppColors.textPrimary)
-            Text(hint).font(.caption).foregroundStyle(AppColors.textSecondary)
+                // UI tests and VoiceOver find the fields by these names.
+                .accessibilityLabel(field == .pulse ? "Pulse" : sub)
+            if let unit {
+                Text(unit).font(.headline).foregroundStyle(AppColors.textSecondary)
+            }
         }
+        .padding(.horizontal, 18)
+        .frame(minHeight: 84)
+        .background(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous).fill(AppColors.bgCard))
+        .overlay(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous)
+            .strokeBorder(focused ? AppColors.accent : AppColors.separator, lineWidth: focused ? 2 : 1))
+        .contentShape(Rectangle())
+        .onTapGesture { focus = field }
+    }
+
+    /// The live result: category in its color, where it sits on the scale, and the Low note if it applies.
+    private func resultCard(_ category: BPCategory) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("This reading is").font(.subheadline).foregroundStyle(AppColors.textSecondary)
+            Text(category.title).font(.title2.bold()).foregroundStyle(category.color)
+            CategoryScale(category: category, showsLabels: true)
+            CategoryNote(category: category)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous).fill(category.color.opacity(0.08)))
+        .overlay(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous)
+            .strokeBorder(category.color.opacity(0.35), lineWidth: 1))
+        .animation(.default, value: category)
+    }
+
+    private func sectionTitle(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(AppColors.textSecondary)
+            .padding(.top, 6)
+            .padding(.leading, 4)
+    }
+
+    private func caption(_ text: String) -> some View {
+        Text(text).font(.subheadline).foregroundStyle(AppColors.textSecondary)
     }
 
     private func load() {

@@ -23,10 +23,7 @@ struct ReportView: View {
         NavigationStack {
             Form {
                 Section {
-                    Picker("Period", selection: $range) {
-                        ForEach(ChartRange.allCases) { Text($0.rawValue).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
+                    SegmentedChips(options: ChartRange.allCases, selection: $range) { $0.rawValue }
                     LabeledContent("Readings in this period", value: "\(selected.count)")
                 } footer: {
                     Text("Your doctor gets a one-page summary built on daily averages, a chart, and a table of every reading.")
@@ -39,6 +36,8 @@ struct ReportView: View {
                 }
             }
             .navigationTitle("Doctor Report")
+            .scrollContentBackground(.hidden)
+            .background(AppColors.bgApp)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } }

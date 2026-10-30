@@ -7,13 +7,14 @@ struct CardView<Content: View>: View {
         self.content = content()
     }
 
+    /// White card on the paper background: hairline border, no shadow.
     var body: some View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
-            .background(AppColors.bgCard)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+            .padding(18)
+            .background(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous).fill(AppColors.bgCard))
+            .overlay(RoundedRectangle(cornerRadius: AppShape.cardRadius, style: .continuous)
+                .strokeBorder(AppColors.separator, lineWidth: 1))
     }
 }
 
@@ -21,12 +22,83 @@ struct CategoryBadge: View {
     let category: BPCategory
 
     var body: some View {
-        Text(category.title)
-            .font(.subheadline.weight(.semibold))
-            .foregroundStyle(category.color)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .background(Capsule().fill(category.color.opacity(0.14)))
+        HStack(spacing: 6) {
+            Circle().fill(category.color).frame(width: 8, height: 8)
+            Text(category.title)
+        }
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(category.color)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(category.color.opacity(0.13)))
+    }
+}
+
+/// Where a reading sits on the six categories, Low to Crisis: the current one in
+/// full color with a marker, the rest faded. Backs the badge's color and name
+/// with a position, which also works for color-blind users.
+struct CategoryScale: View {
+    let category: BPCategory
+    var showsLabels = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .top, spacing: 5) {
+                ForEach(BPCategory.allCases, id: \.self) { c in
+                    VStack(spacing: 3) {
+                        Capsule()
+                            .fill(c.color.opacity(c == category ? 1 : 0.3))
+                            .frame(height: c == category ? 10 : 8)
+                        Image(systemName: "arrowtriangle.up.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(c == category ? AppColors.textPrimary : .clear)
+                        if showsLabels {
+                            Text(c.shortTitle)
+                                .font(.caption2.weight(c == category ? .bold : .regular))
+                                .foregroundStyle(c == category ? AppColors.textPrimary : AppColors.textSecondary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .accessibilityElement()
+        .accessibilityLabel("\(category.title), \(BPCategory.allCases.firstIndex(of: category)! + 1) of \(BPCategory.allCases.count) on the blood pressure scale")
+    }
+}
+
+/// Segmented choice on a warm fill track, with 44pt segments. Selected segments
+/// carry the accessibility "selected" trait, like the system control.
+struct SegmentedChips<Value: Hashable>: View {
+    let options: [Value]
+    @Binding var selection: Value
+    let title: (Value) -> String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(options, id: \.self) { option in
+                let on = option == selection
+                Button {
+                    selection = option
+                } label: {
+                    Text(title(option))
+                        .font(.body.weight(on ? .semibold : .regular))
+                        .foregroundStyle(on ? AppColors.textPrimary : AppColors.textSecondary)
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(on ? AppColors.bgCard : .clear)
+                            .shadow(color: .black.opacity(on ? 0.08 : 0), radius: 2, y: 1))
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+        }
+        .padding(4)
+        .background(RoundedRectangle(cornerRadius: 15, style: .continuous).fill(AppColors.bgInput))
+        .sensoryFeedback(.selection, trigger: selection)
     }
 }
 
@@ -85,7 +157,7 @@ struct ReadingNumbers: View {
     }
 }
 
-/// Full-width 56pt primary action, thumb-reachable at the bottom of the screen.
+/// Full-width 58pt capsule primary action, thumb-reachable at the bottom of the screen.
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         PrimaryButtonBody(configuration: configuration)
@@ -99,9 +171,9 @@ struct PrimaryButtonStyle: ButtonStyle {
             configuration.label
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, minHeight: 56)
+                .frame(maxWidth: .infinity, minHeight: 58)
                 .background(
-                    RoundedRectangle(cornerRadius: 14)
+                    Capsule()
                         .fill(isEnabled ? AppColors.accent : AppColors.pulse.opacity(0.5))
                         .opacity(configuration.isPressed ? 0.8 : 1)
                 )

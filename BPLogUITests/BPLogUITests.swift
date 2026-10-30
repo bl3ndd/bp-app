@@ -111,10 +111,11 @@ final class BPLogUITests: XCTestCase {
     func testSeveralReadingsTodayShowTodaysAverage() {
         launch(["-SKIP_ONBOARDING", "-FREE"])
         addReading("120", "80")
-        XCTAssertFalse(app.staticTexts["Today's average"].exists)
+        let todayCard = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH 'Today'")).firstMatch
+        XCTAssertFalse(todayCard.exists)
         addReading("130", "90")
-        XCTAssertTrue(app.staticTexts["Today's average"].waitForExistence(timeout: 3))
-        XCTAssertTrue(element(containing: "125/85").exists)
+        XCTAssertTrue(todayCard.waitForExistence(timeout: 3))
+        XCTAssertTrue(todayCard.label.contains("125/85"))
     }
 
     // MARK: History
