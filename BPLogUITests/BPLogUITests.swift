@@ -136,6 +136,20 @@ final class BPLogUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["No readings yet"].waitForExistence(timeout: 5))
     }
 
+    @MainActor
+    func testDeleteFromEditScreen() {
+        launch(["-SKIP_ONBOARDING", "-FREE"])
+        addReading("122", "79")
+        tab("History")
+        let row = app.cells.containing(NSPredicate(format: "label CONTAINS %@", "122/79")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        row.tap()
+        app.buttons["Delete Reading"].firstMatch.tap()
+        let confirm = app.sheets.buttons["Delete Reading"].exists ? app.sheets.buttons["Delete Reading"] : app.buttons.matching(identifier: "Delete Reading").element(boundBy: 1)
+        confirm.tap()
+        XCTAssertTrue(app.staticTexts["No readings yet"].waitForExistence(timeout: 5))
+    }
+
     // MARK: Pro gating
 
     @MainActor

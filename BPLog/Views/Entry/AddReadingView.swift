@@ -19,6 +19,7 @@ struct AddReadingView: View {
     @State private var tags: Set<String> = []
     @State private var note = ""
     @State private var saved = false
+    @State private var confirmingDelete = false
     @FocusState private var focus: Field?
 
     @AppStorage("lastArm") private var lastArm = Arm.left.rawValue
@@ -114,6 +115,20 @@ struct AddReadingView: View {
                             .font(.body)
                             .focused($focus, equals: .note)
                     }
+
+                    // A visible way to delete: swipe-to-delete in History is easy to miss.
+                    if editing != nil {
+                        Button(role: .destructive) {
+                            confirmingDelete = true
+                        } label: {
+                            Label("Delete Reading", systemImage: "trash")
+                                .font(.body.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: 50)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(AppColors.stage2)
+                        .padding(.top, 8)
+                    }
                 }
                 .padding()
             }
@@ -135,6 +150,14 @@ struct AddReadingView: View {
                     .background(AppColors.bgApp)
             }
             .sensoryFeedback(.success, trigger: saved)
+            .confirmationDialog("Delete this reading?", isPresented: $confirmingDelete, titleVisibility: .visible) {
+                Button("Delete Reading", role: .destructive) {
+                    if let editing { ReadingActions.delete([editing], context: context, settings: settings) }
+                    dismiss()
+                }
+            } message: {
+                Text("It will be removed from your history. This can't be undone.")
+            }
             .onAppear(perform: load)
         }
     }
