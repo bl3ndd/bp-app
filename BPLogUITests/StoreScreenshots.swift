@@ -23,7 +23,9 @@ final class StoreScreenshots: XCTestCase {
     @MainActor
     private func launch(_ arguments: [String]) {
         app = XCUIApplication()
-        app.launchArguments = arguments
+        // US formats in the store whatever the test phone is set to ("-1.9", "Oct 30", "8:48 PM").
+        app.launchArguments = arguments + ["-AppleLocale", "en_US", "-AppleLanguages", "(en-US)",
+                                           "-AppleICUForce24HourTime", "NO"]
         app.launch()
     }
 
@@ -71,8 +73,9 @@ final class StoreScreenshots: XCTestCase {
         tab("Stats")
         XCTAssertTrue(app.staticTexts["Average"].waitForExistence(timeout: 5))
         shot("04_Stats")
-        app.swipeUp()
-        shot("05_StatsMore")
+        // Not a scrolled Stats page: under the inline title the scroll-edge blur shows text through.
+        tab("History")
+        shot("05_History")
 
         tab("Home")
         app.buttons["Doctor Report"].tap()

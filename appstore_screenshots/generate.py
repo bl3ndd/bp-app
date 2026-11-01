@@ -13,9 +13,11 @@ Layout:
   raw/<lang>/NN_Screen.png    -> source (plain app screenshot, 1320x2868)
   final/<lang>/NN_Screen.png  -> output (background + headline + device frame)
 
-Run:  python3 generate.py      Requires: Google Chrome, Python 3 (no pip deps).
+Run:  python3 generate.py      Requires: Google Chrome, Python 3 with Pillow.
 """
-import base64, os, subprocess
+import base64, io, os, subprocess
+
+from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(HERE, "raw")
@@ -30,7 +32,7 @@ SCREENS = [
     ("06_Report.png", "A report your<br>doctor can read", "Summary, chart and every reading in one PDF"),
     ("03_Charts.png", "See your trend<br>at a glance", "One point per day, even with several readings"),
     ("04_Stats.png", "Know your<br>real averages", "Trends, changes and more"),
-    ("05_StatsMore.png", "Watch your days<br>in range grow", "Days by category, morning vs. evening"),
+    ("05_History.png", "Every reading,<br>easy to find", "Search by number, tag or note"),
     # No paywall shot: it shows the price, and 2.3.7 bars prices in screenshots.
     # raw/en-US/07_Paywall.png is the In-App Purchase review screenshot instead.
 ]
@@ -40,6 +42,7 @@ TEMPLATE = """<!doctype html><html><head><meta charset="utf-8"><style>
 * { margin:0; padding:0; box-sizing:border-box; }
 html,body { width:1320px; height:2868px; overflow:hidden; }
 body {
+  position:relative;
   font-family:'SF Pro Rounded','SF Pro Display',-apple-system,sans-serif;
   background-color:#2F5FD0;
   background-image:
@@ -57,10 +60,39 @@ body {
   box-shadow: 0 70px 120px rgba(8,20,60,0.45), 0 20px 44px rgba(8,20,60,0.30);
 }
 .phone img { width:100%; display:block; border-radius:94px; }
+.screen { position:relative; }
+.screen svg { position:absolute; inset:0; width:100%; height:100%; }
+.zoom {
+  position:absolute; left:60px; right:60px; top:1050px; border-radius:36px; overflow:hidden;
+  box-shadow: 0 50px 100px rgba(8,20,60,0.45), 0 14px 34px rgba(8,20,60,0.28);
+}
+.zoom img { width:100%; display:block; }
 </style></head><body>
   <div class="head"><h1>__HEAD__</h1><p>__SUB__</p></div>
-  <div class="phone"><img src="__IMG__"></div>
+  <div class="phone"><div class="screen"><img src="__IMG__">__STATUS__</div></div>
+  __ZOOM__
 </body></html>"""
+
+# Real-device captures carry the real clock and battery. Paint Apple's 9:41,
+# full signal and a full battery over them (raw pixel coordinates, 1206 wide).
+STATUS = """<svg viewBox="0 0 1206 2622" preserveAspectRatio="none">
+  <rect x="130" y="55" width="190" height="80" fill="__BG__"/>
+  <rect x="850" y="60" width="85" height="70" fill="__BG__"/>
+  <rect x="1005" y="60" width="110" height="70" fill="__BG__"/>
+  <rect x="938" y="66" width="64" height="58" fill="__BG__"/>
+  <path d="M970,116 L959.4,105.4 A15,15 0 0 1 980.6,105.4 Z"/>
+  <path d="M953.7,98.7 A23,23 0 0 1 986.3,98.7" fill="none" stroke="#000" stroke-width="8.5" stroke-linecap="round"/>
+  <path d="M945.2,89.2 A35,35 0 0 1 994.8,89.2" fill="none" stroke="#000" stroke-width="8.5" stroke-linecap="round"/>
+  <text x="222" y="117" text-anchor="middle" font-family="SF Pro Text, -apple-system" font-weight="600" font-size="57">9:41</text>
+  <rect x="865" y="104" width="11" height="13" rx="3"/><rect x="880.5" y="96" width="11" height="21" rx="3"/>
+  <rect x="896" y="88" width="11" height="29" rx="3"/><rect x="911" y="79" width="11" height="38" rx="3"/>
+  <rect x="1019.5" y="80.5" width="71" height="35" rx="11" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="3"/>
+  <rect x="1025" y="86" width="60" height="24" rx="6.5"/>
+  <rect x="1094" y="91" width="5" height="14" rx="2.5" fill-opacity="0.4"/>
+</svg>"""
+
+# The report page is unreadable at phone scale: show its top (summary + chart) enlarged.
+ZOOM = {"06_Report.png": (52, 400, 1154, 1430)}
 
 
 def b64(path):
@@ -73,7 +105,15 @@ def render(lang, fname, head, sub, outname):
     if not os.path.exists(src):
         print("  SKIP (no raw):", src); return
     outdir = os.path.join(FINAL, lang); os.makedirs(outdir, exist_ok=True)
-    html = (TEMPLATE.replace("__IMG__", b64(src))
+    im = Image.open(src).convert("RGB")
+    bg = "#%02x%02x%02x" % im.getpixel((600, 20))
+    zoom = ""
+    if fname in ZOOM:
+        buf = io.BytesIO()
+        im.crop(ZOOM[fname]).save(buf, "PNG")
+        zoom = '<div class="zoom"><img src="data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode() + '"></div>'
+    html = (TEMPLATE.replace("__IMG__", b64(src)).replace("__STATUS__", STATUS.replace("__BG__", bg))
+                    .replace("__ZOOM__", zoom)
                     .replace("__HEAD__", head).replace("__SUB__", sub))
     hp = os.path.join(outdir, outname.replace(".png", ".html"))
     with open(hp, "w") as f:
