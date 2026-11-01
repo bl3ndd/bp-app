@@ -48,7 +48,7 @@ def upload(kind, attributes_create, relationships, path):
 
 
 def store_screenshots():
-    _, versions = asc.req("GET", f"/v1/apps/{APP_ID}/appStoreVersions?filter[appStoreState]=PREPARE_FOR_SUBMISSION")
+    _, versions = asc.req("GET", f"/v1/apps/{APP_ID}/appStoreVersions?filter[appStoreState]=PREPARE_FOR_SUBMISSION,DEVELOPER_REJECTED,REJECTED,METADATA_REJECTED")
     version_id = versions["data"][0]["id"]
     _, locs = asc.req("GET", f"/v1/appStoreVersions/{version_id}/appStoreVersionLocalizations")
     loc_id = next(l["id"] for l in locs["data"] if l["attributes"]["locale"] == "en-US")
