@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var draftName = ""
     @State private var removing: Person?
     @State private var showingPaywall = false
+    @State private var confirmingDeleteAll = false
 
     /// The name alert either adds someone or renames a person (nil is the owner).
     private enum Naming: Equatable {
@@ -140,8 +141,26 @@ struct SettingsView: View {
                         .font(.subheadline)
                         .foregroundStyle(AppColors.textSecondary)
                 }
+
+                Section {
+                    Button(role: .destructive) {
+                        confirmingDeleteAll = true
+                    } label: {
+                        Label("Delete All Data", systemImage: "trash")
+                    }
+                    .disabled(readings.isEmpty && settings.people.isEmpty)
+                } footer: {
+                    Text("Deletes every reading on this phone, for everyone, and the people you added. Settings and Pro stay.")
+                }
             }
             .navigationTitle("Settings")
+            .confirmationDialog("Delete all data?", isPresented: $confirmingDeleteAll, titleVisibility: .visible) {
+                Button("Delete All Data", role: .destructive) {
+                    ReadingActions.deleteAll(context: context, settings: settings)
+                }
+            } message: {
+                Text("All \(readings.count == 1 ? "1 reading" : "\(readings.count) readings") will be deleted. Copies this app saved to Apple Health are removed too; readings from your monitor's app stay there. Back up first if you might need them. This can't be undone.")
+            }
             .scrollContentBackground(.hidden)
             .background(AppColors.bgApp)
             .fileExporter(

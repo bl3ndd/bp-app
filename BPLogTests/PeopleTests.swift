@@ -90,4 +90,24 @@ struct PeopleTests {
         #expect(result == BackupService.ImportResult(added: 1, skipped: 0))
         #expect(try context.fetch(FetchDescriptor<Reading>()).first?.personID == nil)
     }
+
+    @Test func deleteAllRemovesEveryonesReadingsAndThePeople() throws {
+        let (settings, _) = makeSettings()
+        let sam = settings.addPerson(named: "Sam")
+        settings.activePersonID = sam.id
+        let context = try makeContext()
+        let mine = Reading(systolic: 120, diastolic: 80)
+        let his = Reading(systolic: 140, diastolic: 90, personID: sam.id)
+        context.insert(mine)
+        context.insert(his)
+        try context.save()
+
+        ReadingActions.deleteAll(context: context, settings: settings)
+
+        #expect(try context.fetch(FetchDescriptor<Reading>()).isEmpty)
+        #expect(settings.people.isEmpty)
+        #expect(settings.activePersonID == nil)
+        // Remembered, so a Health sync can't bring them back.
+        #expect(settings.deletedIDs.isSuperset(of: [mine.id, his.id]))
+    }
 }

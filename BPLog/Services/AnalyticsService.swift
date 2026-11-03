@@ -34,6 +34,7 @@ enum Analytics {
         case backupRestored = "backup.restored"
         case remindersChanged = "reminders.changed"
         case personAdded = "person.added"
+        case dataDeleted = "data.deleted"
     }
 
     /// Where events go. Replaced by tests with a recording closure.
