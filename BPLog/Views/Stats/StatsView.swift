@@ -7,7 +7,10 @@ import Charts
 struct StatsView: View {
     @Environment(PurchaseService.self) private var purchases
     @Environment(AppSettings.self) private var settings
-    @Query(sort: \Reading.date) private var readings: [Reading]
+    @Query(sort: \Reading.date) private var allReadings: [Reading]
+
+    /// The person picked in the toolbar; `allReadings` holds everyone's.
+    private var readings: [Reading] { allReadings.of(settings.activePersonID) }
     @State private var range = ChartRange.month
     @State private var showingPaywall = false
     @State private var showingReport = false
@@ -41,6 +44,7 @@ struct StatsView: View {
             .onAppear { Analytics.track(.statsOpened, ["pro": purchases.isPro ? "true" : "false"]) }
             .sheet(isPresented: $showingPaywall) { PaywallView(source: "stats") }
             .toolbar {
+                PersonPicker()
                 if !readings.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button { showingReport = true } label: { Label("Doctor Report", systemImage: "doc.text") }

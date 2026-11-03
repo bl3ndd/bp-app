@@ -22,10 +22,13 @@ final class Reading {
     /// The Health correlation this reading came from or was written to.
     /// Used to skip re-imports and to delete our own writes from Health.
     var healthKitID: UUID?
+    /// Whose reading this is: nil for the phone's owner, else a `Person` from
+    /// settings (Pro). Only the owner's readings go to and come from Apple Health.
+    var personID: UUID?
 
     init(date: Date = Date(), systolic: Int, diastolic: Int, pulse: Int? = nil,
          arm: Arm = .left, position: Position = .sitting, tags: [String] = [], note: String = "",
-         source: ReadingSource = .manual, healthKitID: UUID? = nil) {
+         source: ReadingSource = .manual, healthKitID: UUID? = nil, personID: UUID? = nil) {
         self.date = date
         self.systolic = systolic
         self.diastolic = diastolic
@@ -36,6 +39,7 @@ final class Reading {
         self.note = note
         self.sourceRaw = source.rawValue
         self.healthKitID = healthKitID
+        self.personID = personID
     }
 
     var arm: Arm {
@@ -56,6 +60,11 @@ final class Reading {
     var category: BPCategory { BPCategory.classify(systolic: systolic, diastolic: diastolic) }
 
     var value: ReadingValue { ReadingValue(date: date, systolic: systolic, diastolic: diastolic, pulse: pulse) }
+}
+
+extension Sequence where Element == Reading {
+    /// One person's readings; nil is the phone's owner.
+    func of(_ person: UUID?) -> [Reading] { filter { $0.personID == person } }
 }
 
 /// Plain snapshot of a reading for statistics and exports — testable without SwiftData.

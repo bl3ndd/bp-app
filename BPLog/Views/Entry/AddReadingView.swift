@@ -20,6 +20,7 @@ struct AddReadingView: View {
     @State private var note = ""
     @State private var saved = false
     @State private var confirmingDelete = false
+    @State private var showingScanner = false
     @FocusState private var focus: Field?
 
     @AppStorage("lastArm") private var lastArm = Arm.left.rawValue
@@ -57,6 +58,18 @@ struct AddReadingView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    if editing == nil, ScanMonitorView.isSupported {
+                        Button {
+                            focus = nil
+                            showingScanner = true
+                        } label: {
+                            Label("Scan Your Monitor", systemImage: "camera.viewfinder")
+                                .font(.body.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: 50)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(AppColors.accent)
+                    }
                     VStack(spacing: 10) {
                         valueRow("Top number", sub: "Systolic", text: $systolic, field: .systolic, next: .diastolic)
                         valueRow("Bottom number", sub: "Diastolic", text: $diastolic, field: .diastolic, next: .pulse)
@@ -159,6 +172,14 @@ struct AddReadingView: View {
                 Text("It will be removed from your history. This can't be undone.")
             }
             .onAppear(perform: load)
+            .fullScreenCover(isPresented: $showingScanner) {
+                ScanMonitorView { result in
+                    systolic = String(result.systolic)
+                    diastolic = String(result.diastolic)
+                    pulse = result.pulse.map(String.init) ?? ""
+                    Analytics.track(.monitorScanned)
+                }
+            }
         }
     }
 
@@ -260,7 +281,7 @@ struct AddReadingView: View {
             reading.pulse = pul
             reading.date = date
         } else {
-            reading = Reading(date: date, systolic: sys, diastolic: dia, pulse: pul)
+            reading = Reading(date: date, systolic: sys, diastolic: dia, pulse: pul, personID: settings.activePersonID)
             context.insert(reading)
             ReviewService.recordReading(reading.category)
             Analytics.track(.readingAdded)
@@ -275,7 +296,8 @@ struct AddReadingView: View {
         saved.toggle()
 
         // Our own writes are mirrored to Health; an edit replaces the old sample.
-        if settings.healthEnabled, reading.source == .manual {
+        // Apple Health is the owner's: other people's readings stay in the app.
+        if settings.healthEnabled, reading.source == .manual, reading.personID == nil {
             let value = reading.value
             let meta = HealthMeta(reading)
             let readingID = reading.id

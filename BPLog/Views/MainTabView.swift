@@ -5,7 +5,9 @@ struct MainTabView: View {
     enum Page: Hashable { case home, history, charts, stats, settings }
 
     @Environment(AppSettings.self) private var settings
-    @Query(sort: \Reading.date) private var readings: [Reading]
+    @Query(sort: \Reading.date) private var allReadings: [Reading]
+    /// The widget is the owner's: someone else's numbers on the owner's home screen would mislead.
+    private var readings: [Reading] { allReadings.of(nil) }
     @State private var page = Page.home
 
     var body: some View {

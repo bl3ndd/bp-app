@@ -4,10 +4,13 @@ import SwiftData
 struct HomeView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(PurchaseService.self) private var purchases
-    @Query(sort: \Reading.date, order: .reverse) private var readings: [Reading]
+    @Query(sort: \Reading.date, order: .reverse) private var allReadings: [Reading]
     @State private var showingAdd = false
     @State private var showingFirstPaywall = false
     @State private var showingReport = false
+
+    /// The person picked in the toolbar; `allReadings` holds everyone's.
+    private var readings: [Reading] { allReadings.of(settings.activePersonID) }
 
     private var lastWeek: [ReadingValue] {
         let calendar = Calendar.current
@@ -52,6 +55,7 @@ struct HomeView: View {
             .sheet(isPresented: $showingAdd, onDismiss: offerProAfterFirstReading) { AddReadingView() }
             .sheet(isPresented: $showingFirstPaywall) { PaywallView(source: "first_reading") }
             .toolbar {
+                PersonPicker()
                 if !readings.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button { showingReport = true } label: { Label("Doctor Report", systemImage: "doc.text") }

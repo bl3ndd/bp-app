@@ -16,6 +16,8 @@ enum BackupService {
         var version: Int
         var exportedAt: Date
         var readings: [Item]
+        /// Everyone besides the owner. Absent in files from 1.0.
+        var people: [Person]?
     }
 
     nonisolated struct Item: Codable, Equatable {
@@ -30,16 +32,21 @@ enum BackupService {
         var note: String
         var source: String
         var healthKitID: UUID?
+        /// Absent in files from 1.0, where every reading was the owner's.
+        var personID: UUID?
     }
 
     /// What an import actually did, so the UI reports it honestly.
     struct ImportResult: Equatable {
         var added: Int
         var skipped: Int
+        /// People in the file, for the caller to merge into settings.
+        var people: [Person] = []
     }
 
-    static func export(_ readings: [Reading], now: Date = Date()) throws -> Data {
-        let archive = Archive(version: formatVersion, exportedAt: now, readings: readings.map(Item.init(from:)))
+    static func export(_ readings: [Reading], people: [Person] = [], now: Date = Date()) throws -> Data {
+        let archive = Archive(version: formatVersion, exportedAt: now, readings: readings.map(Item.init(from:)),
+                              people: people.isEmpty ? nil : people)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         encoder.dateEncodingStrategy = .iso8601
@@ -54,7 +61,7 @@ enum BackupService {
         decoder.dateDecodingStrategy = .iso8601
         let archive = try decoder.decode(Archive.self, from: data)
         let existing = Set(((try? context.fetch(FetchDescriptor<Reading>())) ?? []).map(\.id))
-        var result = ImportResult(added: 0, skipped: 0)
+        var result = ImportResult(added: 0, skipped: 0, people: archive.people ?? [])
         for item in archive.readings {
             guard !existing.contains(item.id) else { result.skipped += 1; continue }
             context.insert(item.makeModel())
@@ -82,11 +89,12 @@ private extension BackupService.Item {
         note = r.note
         source = r.sourceRaw
         healthKitID = r.healthKitID
+        personID = r.personID
     }
 
     func makeModel() -> Reading {
         let r = Reading(date: date, systolic: systolic, diastolic: diastolic, pulse: pulse,
-                        tags: tags, note: note, healthKitID: healthKitID)
+                        tags: tags, note: note, healthKitID: healthKitID, personID: personID)
         r.id = id
         r.armRaw = arm
         r.positionRaw = position

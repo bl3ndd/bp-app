@@ -1,6 +1,13 @@
 import Foundation
 import Observation
 
+/// Someone else whose readings this phone keeps: a partner, a parent (Pro).
+/// The owner isn't in the list; their readings carry no person.
+nonisolated struct Person: Codable, Identifiable, Equatable, Hashable, Sendable {
+    var id = UUID()
+    var name: String
+}
+
 /// User preferences backed by UserDefaults.
 @Observable
 final class AppSettings {
@@ -29,6 +36,42 @@ final class AppSettings {
     /// "In range" means below both targets. 130/80 is the AHA treatment goal for most adults.
     var targetSystolic: Int { didSet { defaults.set(targetSystolic, forKey: Keys.targetSystolic) } }
     var targetDiastolic: Int { didSet { defaults.set(targetDiastolic, forKey: Keys.targetDiastolic) } }
+    /// What the owner is called in the person switcher.
+    var ownerName: String { didSet { defaults.set(ownerName, forKey: Keys.ownerName) } }
+    private(set) var people: [Person] {
+        didSet { defaults.set(try? JSONEncoder().encode(people), forKey: Keys.people) }
+    }
+    /// Whose readings the tabs show; nil is the owner.
+    var activePersonID: UUID? { didSet { defaults.set(activePersonID?.uuidString, forKey: Keys.activePerson) } }
+
+    var activeName: String { name(of: activePersonID) }
+
+    func name(of person: UUID?) -> String {
+        people.first { $0.id == person }?.name ?? ownerName
+    }
+
+    @discardableResult
+    func addPerson(named name: String) -> Person {
+        let person = Person(name: name.trimmingCharacters(in: .whitespacesAndNewlines))
+        people.append(person)
+        return person
+    }
+
+    func rename(_ person: UUID, to name: String) {
+        guard let i = people.firstIndex(where: { $0.id == person }) else { return }
+        people[i].name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    func removePerson(_ person: UUID) {
+        people.removeAll { $0.id == person }
+        if activePersonID == person { activePersonID = nil }
+    }
+
+    /// People from a backup that aren't here yet; existing ones keep their current names.
+    func merge(_ incoming: [Person]) {
+        let known = Set(people.map(\.id))
+        people += incoming.filter { !known.contains($0.id) }
+    }
 
     func rememberDeleted(_ ids: [UUID]) {
         deletedIDs.formUnion(ids)
@@ -44,6 +87,11 @@ final class AppSettings {
         reminderMinutes = defaults.array(forKey: Keys.reminders) as? [Int] ?? []
         targetSystolic = defaults.object(forKey: Keys.targetSystolic) as? Int ?? 130
         targetDiastolic = defaults.object(forKey: Keys.targetDiastolic) as? Int ?? 80
+        ownerName = defaults.string(forKey: Keys.ownerName) ?? "Me"
+        let people = (defaults.data(forKey: Keys.people)).flatMap { try? JSONDecoder().decode([Person].self, from: $0) } ?? []
+        self.people = people
+        let active = defaults.string(forKey: Keys.activePerson).flatMap(UUID.init(uuidString:))
+        activePersonID = people.contains { $0.id == active } ? active : nil
     }
 
     private enum Keys {
@@ -55,5 +103,8 @@ final class AppSettings {
         static let reminders = "reminderMinutes"
         static let targetSystolic = "targetSystolic"
         static let targetDiastolic = "targetDiastolic"
+        static let ownerName = "ownerName"
+        static let people = "people"
+        static let activePerson = "activePersonID"
     }
 }

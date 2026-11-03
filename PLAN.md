@@ -238,3 +238,9 @@ Files:
   - 2.3.1(a) Notes for Review: HealthKit read/write, Pro gating, PDF, JSON backup (user-initiated, user-chosen location), how to add readings in an empty app, no background monitoring
   - 2.1(b) / 3.1.1: IAP visible and functional for the reviewer, Restore Purchases visible
   - 5.1: crisis banner says "911 or your local emergency number"
+
+## 1.1 (branch `v1.1`, not submitted; 1.0 is in review)
+
+- **Scan your monitor** (free): Add Reading → "Scan Your Monitor" opens VisionKit's live text scanner; `MonitorReader` picks the biggest valid top/bottom pair in reading order and the largest leftover number as pulse, offered after 3 identical frames; the person confirms. Camera usage string added. Free because entering data is never gated (Feeltracker, the only competitor with scanning, also keeps it free).
+- **People** (Pro): Settings › People adds a partner or parent; a switcher appears at the top of every tab. `Reading.personID` (nil = owner, so 1.0 data needs no migration); people live in `AppSettings`. Only the owner's readings go to and come from Apple Health and show in the widget. The doctor report uses the person's name. Backups carry people and `personID`; 1.0 files restore as the owner's.
+- To verify on a real monitor before release: seven-segment LCD digits are the risk for Vision text recognition.

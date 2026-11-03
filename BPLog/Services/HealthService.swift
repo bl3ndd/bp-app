@@ -189,7 +189,7 @@ enum HealthService {
     @discardableResult
     static func backfill(_ context: ModelContext) async -> Int {
         let pending = ((try? context.fetch(FetchDescriptor<Reading>())) ?? [])
-            .filter { $0.source == .manual && $0.healthKitID == nil }
+            .filter { $0.source == .manual && $0.healthKitID == nil && $0.personID == nil }
         var saved = 0
         for r in pending {
             if let id = await save(r.value, meta: HealthMeta(r)) {

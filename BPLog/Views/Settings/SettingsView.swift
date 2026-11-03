@@ -12,6 +12,16 @@ struct SettingsView: View {
     @State private var showImporter = false
     @State private var message: String?
     @State private var syncing = false
+    @State private var naming: Naming?
+    @State private var draftName = ""
+    @State private var removing: Person?
+    @State private var showingPaywall = false
+
+    /// The name alert either adds someone or renames a person (nil is the owner).
+    private enum Naming: Equatable {
+        case add
+        case rename(UUID?)
+    }
 
     var body: some View {
         NavigationStack {
@@ -59,6 +69,27 @@ struct SettingsView: View {
                     Text("Your target")
                 } footer: {
                     Text("Used for \"In your target range\" in Statistics and the doctor report. 130/80 is a common goal; ask your doctor what yours is.")
+                }
+
+                Section {
+                    personRow(nil)
+                    ForEach(settings.people) { person in
+                        personRow(person.id)
+                    }
+                    .onDelete { offsets in removing = offsets.first.map { settings.people[$0] } }
+                    Button(action: addPerson) {
+                        HStack {
+                            Label("Add Someone", systemImage: "person.badge.plus")
+                            if ProFeature.isLocked(.people, isPro: purchases.isPro) {
+                                Spacer()
+                                Image(systemName: "lock.fill").foregroundStyle(AppColors.textSecondary)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("People")
+                } footer: {
+                    Text("Keep a separate history for a partner or a parent, and switch between people at the top of each tab. Apple Health and the widget show only yours.")
                 }
 
                 Section {
@@ -121,6 +152,24 @@ struct SettingsView: View {
             ) { result in
                 if case .failure = result { message = "The backup couldn't be saved. Please try again." }
             }
+            .alert(naming == .add ? "Add Someone" : "Rename", isPresented: Binding(
+                get: { naming != nil }, set: { if !$0 { naming = nil } }
+            )) {
+                TextField("Name", text: $draftName)
+                    .textContentType(.givenName)
+                Button("Save", action: saveName)
+                Button("Cancel", role: .cancel) {}
+            }
+            .confirmationDialog("Delete \(removing?.name ?? "")?", isPresented: Binding(
+                get: { removing != nil }, set: { if !$0 { removing = nil } }
+            ), titleVisibility: .visible) {
+                Button("Delete Person and Readings", role: .destructive) {
+                    if let removing { remove(removing) }
+                }
+            } message: {
+                Text("Their readings will be deleted too. This can't be undone.")
+            }
+            .sheet(isPresented: $showingPaywall) { PaywallView(source: "people") }
             .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json]) { result in
                 restore(result)
             }
@@ -197,9 +246,59 @@ struct SettingsView: View {
         message = "Brought in \(imported) readings from Apple Health and saved \(saved) to it. If nothing moved, check Settings › Health › Data Access & Devices › Simply BP and allow blood pressure and heart rate."
     }
 
+    // MARK: People
+
+    private func personRow(_ person: UUID?) -> some View {
+        let count = readings.of(person).count
+        return Button {
+            draftName = settings.name(of: person)
+            naming = .rename(person)
+        } label: {
+            HStack {
+                Text(settings.name(of: person)).foregroundStyle(AppColors.textPrimary)
+                if person == nil {
+                    Text("you").foregroundStyle(AppColors.textSecondary)
+                }
+                Spacer()
+                Text(count == 1 ? "1 reading" : "\(count) readings")
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+        }
+        .deleteDisabled(person == nil)
+    }
+
+    private func addPerson() {
+        guard !ProFeature.isLocked(.people, isPro: purchases.isPro) else {
+            showingPaywall = true
+            return
+        }
+        draftName = ""
+        naming = .add
+    }
+
+    private func saveName() {
+        let name = draftName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty, let naming else { return }
+        switch naming {
+        case .add:
+            // Switch to them right away: the next reading added is most likely theirs.
+            settings.activePersonID = settings.addPerson(named: name).id
+            Analytics.track(.personAdded, ["count": String(settings.people.count)])
+        case .rename(nil):
+            settings.ownerName = name
+        case .rename(let person?):
+            settings.rename(person, to: name)
+        }
+    }
+
+    private func remove(_ person: Person) {
+        ReadingActions.delete(readings.of(person.id), context: context, settings: settings)
+        settings.removePerson(person.id)
+    }
+
     private func prepareBackup() {
         do {
-            backup = BackupDocument(data: try BackupService.export(readings))
+            backup = BackupDocument(data: try BackupService.export(readings, people: settings.people))
             Analytics.track(.backupSaved)
         } catch {
             message = "The backup couldn't be created. Please try again."
@@ -213,6 +312,7 @@ struct SettingsView: View {
         defer { if opened { url.stopAccessingSecurityScopedResource() } }
         do {
             let outcome = try BackupService.restore(from: try Data(contentsOf: url), into: context)
+            settings.merge(outcome.people)
             Analytics.track(.backupRestored)
             message = "Added \(outcome.added) readings. Skipped \(outcome.skipped) you already had."
         } catch {

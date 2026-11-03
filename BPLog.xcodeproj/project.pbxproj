@@ -486,6 +486,7 @@
 				INFOPLIST_FILE = BPLog/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Simply BP uses the camera to read the numbers on your blood pressure monitor's screen. Nothing is photographed or stored.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Simply BP reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Simply BP saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -524,6 +525,7 @@
 				INFOPLIST_FILE = BPLog/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Simply BP";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Simply BP uses the camera to read the numbers on your blood pressure monitor's screen. Nothing is photographed or stored.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Simply BP reads blood pressure and pulse from Apple Health, so readings from your smart cuff appear automatically.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Simply BP saves the readings you enter to Apple Health, so they stay with the rest of your health data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -32,7 +32,11 @@ enum ChartRange: String, CaseIterable, Identifiable {
 
 struct ChartView: View {
     @Environment(PurchaseService.self) private var purchases
-    @Query(sort: \Reading.date) private var readings: [Reading]
+    @Environment(AppSettings.self) private var settings
+    @Query(sort: \Reading.date) private var allReadings: [Reading]
+
+    /// The person picked in the toolbar; `allReadings` holds everyone's.
+    private var readings: [Reading] { allReadings.of(settings.activePersonID) }
     @State private var range = ChartRange.month
     @State private var showingPaywall = false
     @State private var showPulse = false
@@ -135,6 +139,7 @@ struct ChartView: View {
             }
             .background(AppColors.bgApp)
             .navigationTitle("Charts")
+            .toolbar { PersonPicker() }
             .sheet(isPresented: $showingPaywall) { PaywallView(source: "charts") }
         }
     }

@@ -35,6 +35,7 @@ struct PaywallView: View {
                             benefit("doc.richtext", "Doctor-ready PDF report", "Averages, a chart and every reading, ready to print or email before your appointment.")
                             benefit("chart.bar.xaxis", "Full statistics", "Morning vs. evening, trends, time in your target range, and more.")
                             benefit("chart.xyaxis.line", "All-time charts", "See 90 days, a year, or your whole history.")
+                            benefit("person.2.fill", "The whole family", "A separate history for a partner or a parent, on one phone.")
                         }
                     }
 

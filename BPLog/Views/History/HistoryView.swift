@@ -4,7 +4,10 @@ import SwiftData
 struct HistoryView: View {
     @Environment(\.modelContext) private var context
     @Environment(AppSettings.self) private var settings
-    @Query(sort: \Reading.date, order: .reverse) private var readings: [Reading]
+    @Query(sort: \Reading.date, order: .reverse) private var allReadings: [Reading]
+
+    /// The person picked in the toolbar; `allReadings` holds everyone's.
+    private var readings: [Reading] { allReadings.of(settings.activePersonID) }
     @State private var editing: Reading?
     @State private var pendingDelete: Reading?
     @State private var searchText = ""
@@ -84,6 +87,7 @@ struct HistoryView: View {
             .onChange(of: scope) { visibleDays = Self.pageSize }
             .onChange(of: searchText) { visibleDays = Self.pageSize }
             .toolbar {
+                PersonPicker()
                 if !readings.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) { filterButton }
                 }

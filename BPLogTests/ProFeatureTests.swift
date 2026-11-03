@@ -3,7 +3,7 @@ import Foundation
 @testable import BPLog
 
 struct ProFeatureTests {
-    @Test(arguments: [ProFeature.pdfReport, .fullStats, .longChartRanges])
+    @Test(arguments: [ProFeature.pdfReport, .fullStats, .longChartRanges, .people])
     func lockedOnlyWithoutPro(feature: ProFeature) {
         #expect(ProFeature.isLocked(feature, isPro: false))
         #expect(!ProFeature.isLocked(feature, isPro: true))
