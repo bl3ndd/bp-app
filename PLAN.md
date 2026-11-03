@@ -241,6 +241,5 @@ Files:
 
 ## 1.1 (branch `v1.1`, not submitted; 1.0 is in review)
 
-- **Scan your monitor** (free): Add Reading → "Scan Your Monitor" opens VisionKit's live text scanner; `MonitorReader` picks the biggest valid top/bottom pair in reading order and the largest leftover number as pulse, offered after 3 identical frames; the person confirms. Camera usage string added. Free because entering data is never gated (Feeltracker, the only competitor with scanning, also keeps it free).
 - **People** (Pro): Settings › People adds a partner or parent; a switcher appears at the top of every tab. `Reading.personID` (nil = owner, so 1.0 data needs no migration); people live in `AppSettings`. Only the owner's readings go to and come from Apple Health and show in the widget. The doctor report uses the person's name. Backups carry people and `personID`; 1.0 files restore as the owner's.
-- To verify on a real monitor before release: seven-segment LCD digits are the risk for Vision text recognition.
+- Scanning a monitor's screen was tried and dropped (2026-11-03): Apple's text recognition got 9 of 55 test screens right (seven-segment digits, faint unlit segments) and often returned wrong numbers. Revisit only with a dedicated seven-segment reader.

@@ -33,7 +33,6 @@ enum Analytics {
         case backupSaved = "backup.saved"
         case backupRestored = "backup.restored"
         case remindersChanged = "reminders.changed"
-        case monitorScanned = "monitor.scanned"
         case personAdded = "person.added"
     }
 
